@@ -23,6 +23,7 @@ function Game(){
   console.log(firebase);
   this.database = firebase.firestore();
   this.name = null;
+  this.id = null;
   this.isPaused = true;
   this.score = null;
   this.speed = null;
@@ -56,7 +57,7 @@ Game.prototype.pauseGame = function(){
 };
 Game.prototype.updateScore = function(score){
   this.scoreElem.innerHTML = score;
-  this.database.collection("players").doc(this.name).update({
+  this.database.collection("players").doc(this.id).update({
     score: score
   })
 };
@@ -161,9 +162,10 @@ window.addEventListener('load',function(){
     document.getElementById("modal").style.display = "none";
     document.getElementById("modal-content").style.display = "none";
     a.name = document.getElementById("name").value;
-    a.database.collection("players").doc(a.name).set({
+    a.id = createUUID();
+    a.database.collection("players").doc(a.id).set({
       name: a.name,
-      id: createUUID(),
+      id: a.id,
       score: 0
     })
       .then(function() {
