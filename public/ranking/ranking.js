@@ -1,6 +1,21 @@
 var LEADERBOARD_SIZE = 5;
+
+// Your web app's Firebase configuration
+var firebaseConfig = {
+  apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
+  authDomain: "balloon-battle.firebaseapp.com",
+  databaseURL: "https://balloon-battle.firebaseio.com",
+  projectId: "balloon-battle",
+  storageBucket: "balloon-battle.appspot.com",
+  messagingSenderId: "20012671944",
+  appId: "1:20012671944:web:751a2fb4a307a7e04196fd"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
 // Create our Firebase reference
-var scoreListRef = new Firebase('https://an22sj9l915.firebaseio-demo.com//scoreList');
+var scoreListRef = firebase.database().ref('players');
+console.log(scoreListRef);
 // Keep a mapping of firebase locations to HTML elements, so we can move / remove elements as necessary.
 var htmlForPath = {};
 // Helper function that takes a new score snapshot and adds an appropriate row to our leaderboard table.
@@ -42,16 +57,3 @@ var changedCallback = function (scoreSnapshot, prevScoreName) {
 };
 scoreListView.on('child_moved', changedCallback);
 scoreListView.on('child_changed', changedCallback);
-// When the user presses enter on scoreInput, add the score, and update the highest score.
-$("#scoreInput").keypress(function (e) {
-  if (e.keyCode == 13) {
-    var newScore = Number($("#scoreInput").val());
-    var name = $("#nameInput").val();
-    $("#scoreInput").val("");
-    if (name.length === 0)
-      return;
-    var userScoreRef = scoreListRef.child(name);
-    // Use setWithPriority to put the name / score in Firebase, and set the priority to be the score.
-    userScoreRef.setWithPriority({ name:name, score:newScore }, newScore);
-  }
-});

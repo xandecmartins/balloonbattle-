@@ -1,4 +1,28 @@
+function createUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 function Game(){
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
+    authDomain: "balloon-battle.firebaseapp.com",
+    databaseURL: "https://balloon-battle.firebaseio.com",
+    projectId: "balloon-battle",
+    storageBucket: "balloon-battle.appspot.com",
+    messagingSenderId: "20012671944",
+    appId: "1:20012671944:web:751a2fb4a307a7e04196fd"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  console.log(firebase);
+  this.database = firebase.firestore();
+  this.name = null;
   this.isPaused = true;
   this.score = null;
   this.speed = null;
@@ -32,6 +56,9 @@ Game.prototype.pauseGame = function(){
 };
 Game.prototype.updateScore = function(score){
   this.scoreElem.innerHTML = score;
+  this.database.collection("players").doc(this.name).update({
+    score: score
+  })
 };
 
 Game.prototype.buildBalloon = function(color, type, points){
@@ -86,7 +113,7 @@ Game.prototype.initGame = function(){
   this.isSurpriseBalloonEnable = true;
   this.score = 0;
   this.speed = 0.01;
-  this.balloonSize = 1.0;
+  this.balloonSize = 1;
   this.balloonInitialWidth = 40;
   this.balloonInitialHeight = 53;
   this.adjustedHeight = this.balloonInitialHeight*this.balloonSize;
@@ -95,7 +122,7 @@ Game.prototype.initGame = function(){
   this.remainingLives = 5;
   this.updateTime = 50;
   this.densityStep = 1;
-  this.maxBalloon = 50;
+  this.maxBalloon = 50;0
   this.balloonsArray = [];
   this.scoreElem = document.getElementById('score-count');
 
@@ -123,12 +150,28 @@ Balloon.prototype.generateRandomXPos = function(){
   return Math.floor(Math.random() * 450);
 };
 
+
+
 window.addEventListener('load',function(){
   var a = new Game();
+
+
   a.initGame();
   document.getElementById('start-btn').onclick = function(){
     document.getElementById("modal").style.display = "none";
     document.getElementById("modal-content").style.display = "none";
+    a.name = document.getElementById("name").value;
+    a.database.collection("players").doc(a.name).set({
+      name: a.name,
+      id: createUUID(),
+      score: 0
+    })
+      .then(function() {
+        console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+        console.error("Error writing document: ", error);
+      });
     a.startGame();
   };
 });
