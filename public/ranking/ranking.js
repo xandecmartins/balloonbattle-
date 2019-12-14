@@ -2,7 +2,7 @@ var LEADERBOARD_SIZE = 5;
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
+  apiKey: "[KEY]",
   authDomain: "balloon-battle.firebaseapp.com",
   databaseURL: "https://balloon-battle.firebaseio.com",
   projectId: "balloon-battle",
