@@ -2,6 +2,9 @@ function Game(){
   this.isPaused = true;
   this.score = null;
   this.speed = null;
+  this.balloonSize = null;
+  this.balloonInitialWidth = null;
+  this.balloonInitialHeight = null;
   this.density = null;
   this.remainingLives = 5;
   this.playElement = document.getElementById('start-btn');
@@ -30,34 +33,43 @@ Game.prototype.pauseGame = function(){
 Game.prototype.updateScore = function(score){
   this.scoreElem.innerHTML = score;
 };
+
+Game.prototype.buildBalloon = function(color, type, points){
+  var tempBalloon = new Balloon(0, -this.adjustedHeight, color, type, points);
+  tempBalloon.positionX = tempBalloon.generateRandomXPos();
+  //console.log(tempBalloon.positionX);
+  var el = document.createElement('div');
+  el.className = 'balloon '+ tempBalloon.color;
+  el.style.left = tempBalloon.positionX+'px';
+  el.style.bottom = tempBalloon.positionY+'px';
+  el.style.backgroundSize= '100% 100%';
+  el.style.width = this.adjustedWidth+'px';
+  el.style.height = this.adjustedHeight+'px';
+  var thiz = this;
+  var index = this.balloonsArray.length;
+  el.onclick = function(){
+    thiz.score += thiz.balloonsArray[index].points;
+    thiz.updateScore(thiz.score);
+    this.parentNode.removeChild(el);
+  };
+  this.canvasElement.appendChild(el);
+  var tempObj = {};
+  tempObj.el = el;
+  tempObj.speed = tempBalloon.getRandomSpeed();
+  tempObj.points = tempBalloon.points;
+  return tempObj;
+};
+
 Game.prototype.updateGame = function(){
   this.densityStep += this.density;
-  if(this.densityStep >= 1 && this.balloonsArray.length < 30)
+  if(this.densityStep >= 1 && this.balloonsArray.length < this.maxBalloon)
   {
     for(var i = 0; i < parseInt(this.densityStep, 10); i++)
     {
-      var tempBalloon = new Balloon(0, -53, 'green', 'normal', 150);
-      tempBalloon.positionX = tempBalloon.generateRandomXPos();
-      console.log(tempBalloon.positionX);
-      var el = document.createElement('div');
-      el.className = 'balloon '+ tempBalloon.color;
-      el.style.left = tempBalloon.positionX+'px';
-      el.style.bottom = tempBalloon.positionY+'px';
-      var thiz = this;
-      var index = this.balloonsArray.length;
-      el.onclick = function(){
-        thiz.score += thiz.balloonsArray[index].points;
-        thiz.updateScore(thiz.score);
-        this.parentNode.removeChild(el);
-      };
-      this.canvasElement.appendChild(el);
-      var tempObj = {};
-      tempObj.el = el;
-      tempObj.speed = tempBalloon.getRandomSpeed();
-      tempObj.points = tempBalloon.points;
-      this.balloonsArray.push(tempObj);
+      this.balloonsArray.push(this.buildBalloon( 'green', 150));
       //console.log(tempObj.speed);
     }
+
     this.densityStep = 0;
   }
   for(var i = 0; i < this.balloonsArray.length; i++)
@@ -70,21 +82,37 @@ Game.prototype.endGame = function(){
 };
 Game.prototype.initGame = function(){
   this.isPaused = true;
+  this.isSpecialBalloonEnable = true;
+  this.isSurpriseBalloonEnable = true;
   this.score = 0;
   this.speed = 0.01;
+  this.balloonSize = 1.0;
+  this.balloonInitialWidth = 40;
+  this.balloonInitialHeight = 53;
+  this.adjustedHeight = this.balloonInitialHeight*this.balloonSize;
+  this.adjustedWidth = this.balloonInitialWidth*this.balloonSize;
   this.density = 1000/4000;
   this.remainingLives = 5;
   this.updateTime = 50;
   this.densityStep = 1;
+  this.maxBalloon = 50;
   this.balloonsArray = [];
   this.scoreElem = document.getElementById('score-count');
 
+  if(this.isSpecialBalloonEnable){
+    this.balloonsArray.push(this.buildBalloon( 'special', 300));
+  }
+
+  if(this.isSurpriseBalloonEnable){
+    let luckyFactor = Math.random()%5==0?1:-1;
+    this.balloonsArray.push(this.buildBalloon( 'surprise', 400*luckyFactor));
+  }
+
 };
-function Balloon(x, y, color, type, points){
+function Balloon(x, y, color, points){
   this.positionX = x;
   this.positionY = y;
   this.color = color;
-  this.type = type;
   this.points = points;
 }
 Balloon.prototype.getRandomSpeed = function(){
@@ -99,6 +127,8 @@ window.addEventListener('load',function(){
   var a = new Game();
   a.initGame();
   document.getElementById('start-btn').onclick = function(){
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("modal-content").style.display = "none";
     a.startGame();
   };
 });
