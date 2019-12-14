@@ -1,6 +1,6 @@
 // Your web app's Firebase configuration
 var firebaseConfig = {
-  apiKey: "[KEY]",
+  apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
   authDomain: "balloon-battle.firebaseapp.com",
   databaseURL: "https://balloon-battle.firebaseio.com",
   projectId: "balloon-battle",

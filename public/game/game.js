@@ -9,7 +9,7 @@ function Game(){
 
   // Your web app's Firebase configuration
   var firebaseConfig = {
-    apiKey: "[KEY]",
+    apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
     authDomain: "balloon-battle.firebaseapp.com",
     databaseURL: "https://balloon-battle.firebaseio.com",
     projectId: "balloon-battle",
@@ -34,6 +34,7 @@ function Game(){
   this.remainingLives = 5;
   this.playElement = document.getElementById('start-btn');
   this.scoreElement = document.getElementById('score-container');
+  this.nameElement = document.getElementById('name-container');
   this.livesElement = document.getElementById('lives-container');
   this.canvasElement = document.getElementById('canvas');
   this.timer = null;
@@ -60,6 +61,10 @@ Game.prototype.updateScore = function(score){
   this.database.collection("players").doc(this.id).update({
     score: score
   })
+};
+
+Game.prototype.updateName = function(name){
+  this.nameElem.innerHTML = name;
 };
 
 Game.prototype.buildBalloon = function(color, type, points){
@@ -123,9 +128,10 @@ Game.prototype.initGame = function(){
   this.remainingLives = 5;
   this.updateTime = 50;
   this.densityStep = 1;
-  this.maxBalloon = 50;0
+  this.maxBalloon = 50;
   this.balloonsArray = [];
   this.scoreElem = document.getElementById('score-count');
+  this.nameElem = document.getElementById('name-show');
 
   if(this.isSpecialBalloonEnable){
     this.balloonsArray.push(this.buildBalloon( 'special', 300));
@@ -147,7 +153,7 @@ Balloon.prototype.getRandomSpeed = function(){
   return Math.floor(Math.random() * 201)/100;
 };
 Balloon.prototype.generateRandomXPos = function(){
-  console.log('document width = ', Math.floor(Math.random() * 450));
+  //console.log('document width = ', Math.floor(Math.random() * 450));
   return Math.floor(Math.random() * 450);
 };
 
@@ -162,6 +168,7 @@ window.addEventListener('load',function(){
     document.getElementById("modal").style.display = "none";
     document.getElementById("modal-content").style.display = "none";
     a.name = document.getElementById("name").value;
+    a.updateName(a.name);
     a.id = createUUID();
     a.database.collection("players").doc(a.id).set({
       name: a.name,
@@ -169,11 +176,11 @@ window.addEventListener('load',function(){
       score: 0
     })
       .then(function() {
-        console.log("Document successfully written!");
+        a.startGame();
       })
       .catch(function(error) {
         console.error("Error writing document: ", error);
       });
-    a.startGame();
+
   };
 });
