@@ -58,6 +58,9 @@ function Game(){
 Game.prototype.startGame = function(){
   this.playElement.style.display = "none";
   this.intervalId = setInterval(this.updater, this.updateTime);
+  var back = new Audio('top-gear-soundtrack-track-1.mp3');
+  back.loop = true;
+  back.play();
 
 };
 Game.prototype.pauseGame = function(){
@@ -122,6 +125,17 @@ Game.prototype.endGame = function(){
 
 };
 Game.prototype.initGame = function(){
+  //this.database.collection('configurations').doc("configurations").get().then(function(doc) {
+  //  if (doc.exists) {
+  //    this.balloonSize = parseInt(doc.data().balloon_size, 10);
+  //    console.log("Document data:", doc.data());
+  //  } else {
+  //    // doc.data() will be undefined in this case
+  //    console.log("No such document!");
+  //  }
+  //}).catch(function(error) {
+  //  console.log("Error getting document:", error);
+  //});
   this.isPaused = true;
   this.isSpecialBalloonEnable = true;
   this.isSurpriseBalloonEnable = true;
@@ -169,6 +183,7 @@ Balloon.prototype.generateRandomXPos = function(){
 
 
 window.addEventListener('load',function(){
+
   var a = new Game();
   a.initGame();
   document.getElementById('start-btn').onclick = function(){
