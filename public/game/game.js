@@ -90,7 +90,6 @@ Game.prototype.buildBalloon = function(color, type, points){
   el.style.width = this.adjustedWidth+'px';
   el.style.height = this.adjustedHeight+'px';
   var thiz = this;
-  var index = this.balloonsArray.length;
   el.onclick = function(){
     thiz.score += points;
     thiz.updateScore(thiz.score, type);
@@ -125,17 +124,7 @@ Game.prototype.endGame = function(){
 
 };
 Game.prototype.initGame = function(){
-  //this.database.collection('configurations').doc("configurations").get().then(function(doc) {
-  //  if (doc.exists) {
-  //    this.balloonSize = parseInt(doc.data().balloon_size, 10);
-  //    console.log("Document data:", doc.data());
-  //  } else {
-  //    // doc.data() will be undefined in this case
-  //    console.log("No such document!");
-  //  }
-  //}).catch(function(error) {
-  //  console.log("Error getting document:", error);
-  //});
+
   this.isPaused = true;
   this.isSpecialBalloonEnable = true;
   this.isSurpriseBalloonEnable = true;
@@ -147,10 +136,9 @@ Game.prototype.initGame = function(){
   this.adjustedHeight = this.balloonInitialHeight*this.balloonSize;
   this.adjustedWidth = this.balloonInitialWidth*this.balloonSize;
   this.density = 1000/4000;
-  this.remainingLives = 5;
   this.updateTime = 50;
   this.densityStep = 1;
-  this.maxBalloon = 50;
+  this.maxBalloon = 500;
   this.balloonsArray = [];
   this.scoreElem = document.getElementById('score-count');
   this.nameElem = document.getElementById('name-show');
@@ -161,7 +149,7 @@ Game.prototype.initGame = function(){
 
   if(this.isSurpriseBalloonEnable){
     ;
-    let luckyFactor = Math.floor(Math.random() * 10)%3==0?1:-1;
+    let luckyFactor = Math.floor(Math.random() * 10)%2==0?1:-1;
     this.balloonsArray.push(this.buildBalloon( 'surprise', luckyFactor>0?'surprise_good':'surprise_bad',400*luckyFactor));
   }
 
@@ -179,8 +167,6 @@ Balloon.prototype.generateRandomXPos = function(){
   //console.log('document width = ', Math.floor(Math.random() * 450));
   return Math.floor(Math.random() * 450);
 };
-
-
 
 window.addEventListener('load',function(){
 
