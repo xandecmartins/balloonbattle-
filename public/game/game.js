@@ -7,6 +7,14 @@ function createUUID() {
 
 function Game(){
 
+  this.soundMap = {
+      'normal': new Audio('balloon-pop-sound-effect.mp3'),
+      'special': new Audio('cash-register-kaching-sound-effect-hd.mp3'),
+      'surprise_good': new Audio('cash-register-kaching-sound-effect-hd.mp3'),
+      'surprise_bad': new Audio('explosion-sound-effect.mp3')
+
+  };
+
   // Your web app's Firebase configuration
   var firebaseConfig = {
     apiKey: "AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY",
@@ -20,7 +28,6 @@ function Game(){
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
-  console.log(firebase);
   this.database = firebase.firestore();
   this.name = null;
   this.id = null;
@@ -56,11 +63,12 @@ Game.prototype.startGame = function(){
 Game.prototype.pauseGame = function(){
   clearInterval(this.intervalId);
 };
-Game.prototype.updateScore = function(score){
+Game.prototype.updateScore = function(score, type){
   this.scoreElem.innerHTML = score;
   this.database.collection("players").doc(this.id).update({
     score: score
-  })
+  });
+  this.soundMap[type].play();
 };
 
 Game.prototype.updateName = function(name){
@@ -81,8 +89,8 @@ Game.prototype.buildBalloon = function(color, type, points){
   var thiz = this;
   var index = this.balloonsArray.length;
   el.onclick = function(){
-    thiz.score += thiz.balloonsArray[index].points;
-    thiz.updateScore(thiz.score);
+    thiz.score += points;
+    thiz.updateScore(thiz.score, type);
     this.parentNode.removeChild(el);
   };
   this.canvasElement.appendChild(el);
@@ -99,7 +107,7 @@ Game.prototype.updateGame = function(){
   {
     for(var i = 0; i < parseInt(this.densityStep, 10); i++)
     {
-      this.balloonsArray.push(this.buildBalloon( 'green', 150));
+      this.balloonsArray.push(this.buildBalloon( 'green', 'normal',150));
       //console.log(tempObj.speed);
     }
 
@@ -134,12 +142,13 @@ Game.prototype.initGame = function(){
   this.nameElem = document.getElementById('name-show');
 
   if(this.isSpecialBalloonEnable){
-    this.balloonsArray.push(this.buildBalloon( 'special', 300));
+    this.balloonsArray.push(this.buildBalloon( 'special', 'special', 300));
   }
 
   if(this.isSurpriseBalloonEnable){
-    let luckyFactor = Math.random()%5==0?1:-1;
-    this.balloonsArray.push(this.buildBalloon( 'surprise', 400*luckyFactor));
+    ;
+    let luckyFactor = Math.floor(Math.random() * 10)%3==0?1:-1;
+    this.balloonsArray.push(this.buildBalloon( 'surprise', luckyFactor>0?'surprise_good':'surprise_bad',400*luckyFactor));
   }
 
 };
@@ -161,8 +170,6 @@ Balloon.prototype.generateRandomXPos = function(){
 
 window.addEventListener('load',function(){
   var a = new Game();
-
-
   a.initGame();
   document.getElementById('start-btn').onclick = function(){
     document.getElementById("modal").style.display = "none";

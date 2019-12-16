@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Contrail+One');
+
 body{
     background:#47657e;
 }
@@ -57,8 +58,11 @@ body{
     width: 30%; /* Could be more or less, depending on screen size */
 }
 
+#name {
+
+}
+
 #start-btn{
-    position:absolute;
     background:#D5A21A;
     color:#fff;
     font-family: 'Contrail One', cursive;
@@ -68,10 +72,7 @@ body{
     text-shadow:1px 1px 0 #A35906;
     border:4px solid #fff;
     cursor:pointer;
-    top:200px;
     left:50%;
-    margin-left:-40px;
-    display:nonea;
     box-shadow:0 0 20px rgba(0, 0, 0, 0.5);
 }
 #pause-btn{
