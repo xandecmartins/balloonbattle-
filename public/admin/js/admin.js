@@ -41,3 +41,4 @@ firebase.firestore().collection('configurations').doc('configurations').onSnapsh
   html += '</tbody></table>';
   showList.insertAdjacentHTML("beforeend", html);
 });
+
