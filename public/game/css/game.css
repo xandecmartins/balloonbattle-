@@ -1,8 +1,27 @@
 @import url('https://fonts.googleapis.com/css?family=Contrail+One');
 
 body{
-    /*background:#47657e;*/
-    background-image: url('realistic-sky-background_1048-2771.jpg');
+    /* Location of the image */
+    background-image: url('../images/realistic-sky-background_1048-2771.jpg');
+
+    /* Background image is centered vertically and horizontally at all times */
+    background-position: center center;
+
+    /* Background image doesn't tile */
+    background-repeat: no-repeat;
+
+    /* Background image is fixed in the viewport so that it doesn't move when
+       the content's height is greater than the image's height */
+    background-attachment: fixed;
+
+    /* This is what makes the background image rescale based
+       on the container's size */
+    background-size: cover;
+
+    /* Set a background color that will be displayed
+       while the background image is loading */
+    background-color: #464646;
+
 }
 #main-wrapper{
     position:relative;
@@ -59,12 +78,50 @@ body{
     border: 1px solid #888;
     width: 21%; /* Could be more or less, depending on screen size */
     text-align: center;
-    background-image: url('blue-clouds-minimal-art-4k-xk.jpg');
+    background-image: url('../images/blue-clouds-minimal-art-4k-xk.jpg');
 }
 
 #name {
     text-align: center;
+    width: 100%; /* Full width */
 }
+
+#message {
+    text-align: center;
+    font-family: 'Contrail One', cursive;
+    color:#fff;
+    display: none;
+}
+
+#modal-result {
+    display: none;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+
+}
+
+#modal-content-result {
+    display: none;
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 21%; /* Could be more or less, depending on screen size */
+    text-align: center;
+    background-image: url('../images/blue-clouds-minimal-art-4k-xk.jpg');
+}
+#result {
+    text-align: center;
+    font-family: 'Contrail One', cursive;
+    color: #ff9444;
+    display: none;
+}
+
 
 #start-btn{
     background:#D5A21A;

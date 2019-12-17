@@ -1,8 +1,8 @@
 <html>
 <head>
-    <meta name="viewport" content="user-scalable=no" />
-    <link rel="stylesheet" type="text/css" href="game.css">
-    <script src="game.js"></script>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="css/game.css">
+    <script src="js/game.js"></script>
 </head>
 <body>
     <div id="main-wrapper">
@@ -18,8 +18,15 @@
 
         <div id="modal">
             <div id="modal-content">
-                <input id="name" type="text" name="name" placeholder="Name"><br><br>
+                <span id="message">Please, inform your name to start</span>
+                <input id="name" type="text" name="name" maxlength="20" placeholder="Name"><br><br>
                 <button id="start-btn">Play</button>
+            </div>
+        </div>
+
+        <div id="modal-result">
+            <div id="modal-content-result">
+                <span id="result"></span>
             </div>
         </div>
 

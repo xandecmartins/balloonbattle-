@@ -12,16 +12,22 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 console.log("Initialisation Successful!");
-firebase.firestore().collection('players').orderBy('score', 'desc').get().then(snapshot => {
+firebase.firestore().collection('players').orderBy('score', 'desc').onSnapshot(snapshot => {
   var showList = document.getElementById('showList');
-  var html = '<table><thead><tr>';
+  showList.innerHTML = '';
+
+  var html = '<table class="minimalistBlack"><thead><tr>';
+  html += '<th>Position</th>';
   html += '<th>Id</th>';
   html += '<th>Name</th>';
   html += '<th>Score</th>';
   /* add further columns into here, alike the one above. */
   html += '</tr></thead><tbody>';
+  var pos = 1;
   snapshot.forEach(doc => {
     html += '<tr>';
+
+    html += '<td>' + pos + '</td>';
 
     html += '<td>' + doc.data().id + '</td>';
 
@@ -30,6 +36,7 @@ firebase.firestore().collection('players').orderBy('score', 'desc').get().then(s
     html += '<td>' + doc.data().score + '</td>';
 
     html += '</tr>';
+    pos++;
   });
   html += '</tbody></table>';
   showList.insertAdjacentHTML("beforeend", html);
