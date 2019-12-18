@@ -30,19 +30,21 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+const soundMap = {
+  'normal': new Audio('sounds/balloon-pop-sound-effect.mp3'),
+  'special': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
+  'surprise_good': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
+  'surprise_bad': new Audio('sounds/explosion-sound-effect.mp3'),
+  'background_music': new Audio('sounds/top-gear-soundtrack-track-1.mp3'),
+};
+
 class Game {
   constructor() {
-    this.soundMap = {
-      'normal': new Audio('sounds/balloon-pop-sound-effect.mp3'),
-      'special': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
-      'surprise_good': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
-      'surprise_bad': new Audio('sounds/explosion-sound-effect.mp3'),
-    };
 
     this.backMusic = null;
     this.config = {};
     this.database = firebase.firestore();
-    this.docRef = this.database.collection('configurations')
+    this.configDBRef = this.database.collection('configurations')
       .doc('configurations');
     this.name = null;
     this.id = null;
@@ -69,7 +71,7 @@ class Game {
   startGame() {
     this.playElement.style.display = 'none';
     this.intervalId = setInterval(this.updater, this.updateTime);
-    this.backMusic = new Audio('sounds/top-gear-soundtrack-track-1.mp3');
+    this.backMusic = soundMap['background_music'];
     this.backMusic.loop = true;
     this.backMusic.volume = 0.3;
     this.backMusic.play();
@@ -80,7 +82,7 @@ class Game {
   }
 
   loadServerConfig() {
-    this.docRef.onSnapshot(doc => {
+    this.configDBRef.onSnapshot(doc => {
       if (doc.exists) {
         this.config = {
           balloon_size: doc.data().balloon_size,
@@ -120,7 +122,7 @@ class Game {
       .update({
         score: score,
       });
-    this.soundMap[type].play();
+    soundMap[type].play();
   }
 
   buildBalloon(color, type, points) {
