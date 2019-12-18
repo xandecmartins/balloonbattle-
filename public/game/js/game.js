@@ -79,7 +79,7 @@ class Game {
     clearInterval(this.intervalId);
   }
 
-  updateConfig() {
+  loadServerConfig() {
     this.docRef.onSnapshot(doc => {
       if (doc.exists) {
         this.config = {
@@ -95,7 +95,7 @@ class Game {
         if (!this.config.is_paused && this.backMusic) {
           this.backMusic.play();
         }
-        this.updateGameFromConfig();
+        this.applyConfig();
       } else {
         this.config = {
           balloon_size: 1,
@@ -149,10 +149,11 @@ class Game {
       el: el,
       speed: getRandomSpeed(this.config.base_speed),
       points: tempBalloon.points,
+      type: type,
     };
   }
 
-  updateGameFromConfig() {
+  applyConfig() {
     this.balloonsArray.forEach((element) => {
       element.el.style.width = this.balloonInitialWidth * this.config.balloon_size + 'px';
       element.el.style.height = this.balloonInitialHeight * this.config.balloon_size + 'px';
@@ -183,9 +184,21 @@ class Game {
       }
 
       this.balloonsArray.forEach((element) => {
-        element.el.style.bottom = (parseInt(element.el.style.bottom, 10) + (3 + element.speed)) + 'px';
+        const newPos = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
+        element.el.style.bottom = newPos + 'px';
+        if (element.type === 'special' && !this.config.special_balloon) {
+          element.el.style.display = 'none';
+        } else if (element.type === 'special') {
+          element.el.style.display = 'block';
+        }
+
+        if (element.type.startsWith('surprise') && !this.config.surprise_balloon) {
+          element.el.style.display = 'none';
+        } else if (element.type.startsWith('surprise')) {
+          element.el.style.display = 'block';
+        }
       });
-    } else if (this.backMusic) {
+    } else if (this.config.is_paused && this.backMusic) {
       this.backMusic.pause();
     }
     if (this.config.has_finished) {
@@ -207,7 +220,7 @@ class Game {
           document.getElementById('canvas').style.display = 'none';
           document.getElementById('modal-result').style.display = 'grid';
           document.getElementById('modal-content-result').style.display = 'grid';
-          document.getElementById('result').style.display = 'inline';
+          document.getElementById('result').style.display = 'block';
           document.getElementById('result').innerText += 'GAME OVER\n\n';
           if (doc.exists) {
             if (doc.data().id === this.id) {
@@ -246,34 +259,51 @@ class Balloon {
   }
 }
 
-window.addEventListener('load', () => {
-  const a = new Game();
-  a.updateConfig();
-  a.initGame();
+handleStartButtonClick = (game) => {
+  game.name = document.getElementById('name').value;
+  if (game.name != null && game.name.trim() != '') {
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('modal-content').style.display = 'none';
+    document.getElementById('message').style.display = 'none';
+    game.id = createUUID();
+    game.nameElem.innerHTML = game.name + '(...' + game.id.slice(game.id.length - 5) + ')';
+    game.database.collection('players')
+      .doc(game.id)
+      .set({
+        name: game.name,
+        id: game.id,
+        score: 0,
+      })
+      .then(() => {
+        game.startGame();
+      })
+      .catch((error) => {
+        console.error('Error writing document: ', error);
+      });
+  } else {
+    document.getElementById('message').style.display = 'block';
+  }
 
+};
+
+setupInitialEvents = (game) => {
   document.getElementById('start-btn').onclick = () => {
-    a.name = document.getElementById('name').value;
-    if (a.name != null && a.name.trim() != '') {
-      document.getElementById('modal').style.display = 'none';
-      document.getElementById('modal-content').style.display = 'none';
-      document.getElementById('message').style.display = 'none';
-      a.id = createUUID();
-      a.nameElem.innerHTML = a.name + '(...' + a.id.slice(a.id.length - 5) + ')';
-      a.database.collection('players')
-        .doc(a.id)
-        .set({
-          name: a.name,
-          id: a.id,
-          score: 0,
-        })
-        .then(() => {
-          a.startGame();
-        })
-        .catch((error) => {
-          console.error('Error writing document: ', error);
-        });
-    } else {
-      document.getElementById('message').style.display = 'inline';
-    }
+    handleStartButtonClick(game);
   };
+
+  document.getElementById("name")
+    .addEventListener("keyup", function(event) {
+      event.preventDefault();
+      console.log(event.key);
+      if (event.key === 'Enter') {
+        handleStartButtonClick(game);
+      }
+    });
+};
+
+window.addEventListener('load', () => {
+  const game = new Game();
+  game.loadServerConfig();
+  game.initGame();
+  setupInitialEvents(game);
 });
