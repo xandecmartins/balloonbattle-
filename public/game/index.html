@@ -2,37 +2,37 @@
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="css/game.css">
-    <link rel="shortcut icon" href="images/balloon-battle.ico" />
+    <link rel="shortcut icon" href="images/balloon-battle.ico"/>
 </head>
 <body>
-    <div id="main-wrapper">
-        <div id="canvas">
-        </div>
-        <div id="score-label">
-            Score: <span id="score-count">0</span>
-        </div>
-
-        <div id="name-label">
-            <span id="name-show"></span>
-        </div>
-
-        <div id="modal">
-            <div id="modal-content">
-                <span id="message">Please, inform your name to start</span>
-                <input id="name" type="text" name="name" maxlength="20" placeholder="Name"><br><br>
-                <button id="start-btn">Play</button>
-            </div>
-        </div>
-        <div id="modal-result">
-            <div id="modal-content-result">
-                <span id="result"></span>
-            </div>
-        </div>
+<div id="main-wrapper">
+    <div id="canvas">
+    </div>
+    <div id="score-label">
+        Score: <span id="score-count">0</span>
     </div>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.6.0/firebase.js"></script>
-    <script src="js/game.js"></script>
+    <div id="name-label">
+        <span id="name-show"></span>
+    </div>
+
+    <div id="modal">
+        <div id="modal-content">
+            <span id="message">Please, inform your name to start</span>
+            <input id="name" type="text" name="name" maxlength="20" placeholder="Name"><br><br>
+            <button id="start-btn">Play</button>
+        </div>
+    </div>
+    <div id="modal-result">
+        <div id="modal-content-result">
+            <span id="result"></span>
+        </div>
+    </div>
+</div>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="js/firebase.js"></script>
+<script src="js/game.js"></script>
 </body>
 </html>
 

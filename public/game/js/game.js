@@ -1,22 +1,3 @@
-createUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-};
-
-getLuckyFactor = () => {
-  return Math.floor(Math.random() * 10) % 2 == 0 ? 1 : -1;
-};
-
-getRandomSpeed = (base_speed) => {
-  return Math.floor(Math.random() * base_speed) / 100;
-};
-
-generateRandomXPos = (limit) => {
-  return Math.floor(Math.random() * limit);
-};
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyDj_qwUrYCUsEstUJE9wo2ZpuLD_1LGjVY',
@@ -30,6 +11,18 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+let database = firebase.firestore();
+
+function getConfigServerRef() {
+  return database.collection('configurations')
+    .doc('configurations');
+}
+
+function getPlayerRefById(id) {
+  return database.collection('players')
+    .doc(id);
+}
+
 const soundMap = {
   'normal': new Audio('sounds/balloon-pop-sound-effect.mp3'),
   'special': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
@@ -38,39 +31,56 @@ const soundMap = {
   'background_music': new Audio('sounds/top-gear-soundtrack-track-1.mp3'),
 };
 
-class Game {
-  constructor() {
+//src: https://gist.github.com/jed/982883
+function createUUID() {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16),
+  );
+}
 
-    this.backMusic = null;
-    this.config = {};
-    this.database = firebase.firestore();
-    this.configDBRef = this.database.collection('configurations')
-      .doc('configurations');
-    this.name = null;
-    this.id = null;
-    this.score = null;
-    this.speed = null;
-    this.balloonInitialWidth = null;
-    this.balloonInitialHeight = null;
-    this.density = null;
-    this.playElement = document.getElementById('start-btn');
-    this.scoreElem = document.getElementById('score-count');
-    this.nameElem = document.getElementById('name-show');
-    this.canvasElement = document.getElementById('canvas');
-    this.intervalId = null;
-    this.updateTime = null;
-    this.densityStep = null;
-    this.balloonsArray = null;
+function getLuckyFactor() {
+  return Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1;
+}
+
+function getRandomSpeed(base_speed) {
+  return Math.floor(Math.random() * base_speed) / 100;
+}
+
+function generateRandomXPos(limit) {
+  return Math.floor(Math.random() * limit);
+}
+
+const balloonInitialWidth = 40;
+const balloonInitialHeight = 53;
+const updateTime = 50;
+
+class Game {
+
+  config;
+  backMusic;
+  name;
+  id;
+  score;
+
+  intervalId;
+  densityStep;
+  balloonsArray;
+
+  canvasElement = document.getElementById('canvas');
+  playElement = document.getElementById('start-btn');
+  scoreElem = document.getElementById('score-count');
+  nameElem = document.getElementById('name-show');
+
+  constructor() {
     const thiz = this;
     this.updater = () => {
       thiz.updateGame();
-
     };
   }
 
   startGame() {
     this.playElement.style.display = 'none';
-    this.intervalId = setInterval(this.updater, this.updateTime);
+    this.intervalId = setInterval(this.updater, updateTime);
     this.backMusic = soundMap['background_music'];
     this.backMusic.loop = true;
     this.backMusic.volume = 0.3;
@@ -82,64 +92,67 @@ class Game {
   }
 
   loadServerConfig() {
-    this.configDBRef.onSnapshot(doc => {
-      if (doc.exists) {
-        this.config = {
-          balloon_size: doc.data().balloon_size,
-          special_balloon: doc.data().special_balloon,
-          surprise_balloon: doc.data().surprise_balloon,
-          base_speed: doc.data().base_speed,
-          max_balloon_quantity: doc.data().max_balloon_quantity,
-          is_paused: doc.data().is_paused,
-          has_finished: doc.data().has_finished,
-          density: doc.data().density,
-        };
-        if (!this.config.is_paused && this.backMusic) {
-          this.backMusic.play();
+    getConfigServerRef()
+      .onSnapshot(doc => {
+        if (doc.exists) {
+          this.config = {
+            balloonSize: doc.data().balloon_size,
+            specialBalloon: doc.data().special_balloon,
+            surpriseBalloon: doc.data().surprise_balloon,
+            baseSpeed: doc.data().base_speed,
+            maxBalloonQuantity: doc.data().max_balloon_quantity,
+            isPaused: doc.data().is_paused,
+            hasFinished: doc.data().has_finished,
+            density: doc.data().density,
+          };
+          this.applyConfig();
+        } else {
+          this.config = {
+            balloonSize: 1,
+            specialBalloon: true,
+            surpriseBalloon: true,
+            baseSpeed: 201,
+            maxBalloonQuantity: 500,
+            isPaused: false,
+            hasFinished: false,
+            density: 1000 / 4000,
+          };
+          console.log('Config doesn\'t exist on the server, using default values');
         }
-        this.applyConfig();
-      } else {
-        this.config = {
-          balloon_size: 1,
-          special_balloon: true,
-          surprise_balloon: true,
-          base_speed: 201,
-          max_balloon_quantity: 500,
-          is_paused: false,
-          has_finished: false,
-          density: 1000 / 4000,
-        };
-        console.log('Config doesn\'t exist on the server, using default values');
-      }
-    });
+      });
 
   }
 
   updateScore(score, type) {
     this.scoreElem.innerHTML = score;
-    this.database.collection('players')
-      .doc(this.id)
+    getPlayerRefById(this.id)
       .update({
         score: score,
+      })
+      .then(function () {
+        soundMap[type].play();
+      })
+      .catch(function (error) {
+        console.log('Data could not be saved.' + error);
       });
-    soundMap[type].play();
+
   }
 
   buildBalloon(color, type, points) {
-    const tempBalloon = new Balloon(0, -this.balloonInitialHeight * this.config.balloon_size, color, type, points);
+    const tempBalloon = new Balloon(0, -balloonInitialHeight * this.config.balloonSize, color, type, points);
     tempBalloon.positionX = generateRandomXPos(450);
-    //console.log(tempBalloon.positionX);
+
     const el = document.createElement('div');
     el.className = 'balloon ' + tempBalloon.color;
     el.style.left = tempBalloon.positionX + 'px';
     el.style.bottom = tempBalloon.positionY + 'px';
     el.style.backgroundSize = '100% 100%';
-    el.style.width = this.balloonInitialWidth * this.config.balloon_size + 'px';
-    el.style.height = this.balloonInitialHeight * this.config.balloon_size + 'px';
-    const thiz = this;
+    el.style.width = balloonInitialWidth * this.config.balloonSize + 'px';
+    el.style.height = balloonInitialHeight * this.config.balloonSize + 'px';
 
+    const thiz = this;
     el.onclick = () => {
-      if (!thiz.config.is_paused) {
+      if (!thiz.config.isPaused) {
         thiz.score += points;
         thiz.updateScore(thiz.score, type);
         this.canvasElement.removeChild(el);
@@ -149,17 +162,21 @@ class Game {
     this.canvasElement.appendChild(el);
     return {
       el: el,
-      speed: getRandomSpeed(this.config.base_speed),
+      speed: getRandomSpeed(this.config.baseSpeed),
       points: tempBalloon.points,
       type: type,
     };
   }
 
   applyConfig() {
+    if (!this.config.isPaused && !this.config.hasFinished && this.backMusic) {
+      this.backMusic.play();
+    }
+
     this.balloonsArray.forEach((element) => {
-      element.el.style.width = this.balloonInitialWidth * this.config.balloon_size + 'px';
-      element.el.style.height = this.balloonInitialHeight * this.config.balloon_size + 'px';
-      element.speed = getRandomSpeed(this.config.base_speed);
+      element.el.style.width = balloonInitialWidth * this.config.balloonSize + 'px';
+      element.el.style.height = balloonInitialHeight * this.config.balloonSize + 'px';
+      element.speed = getRandomSpeed(this.config.baseSpeed);
     });
   }
 
@@ -167,9 +184,9 @@ class Game {
     for (let i = 0; i < parseInt(this.densityStep, 10); i++) {
       let randomType = Math.floor(Math.random() * 100);
       let luckyFactor = getLuckyFactor();
-      if (this.config.special_balloon && (randomType % 25 === 0)) {
+      if (this.config.specialBalloon && (randomType % 25 === 0)) {
         this.balloonsArray.push(this.buildBalloon('special', 'special', 300));
-      } else if (this.config.surprise_balloon && (randomType % 20 === 0)) {
+      } else if (this.config.surpriseBalloon && (randomType % 20 === 0)) {
         this.balloonsArray.push(this.buildBalloon('surprise', luckyFactor > 0 ? 'surprise_good' : 'surprise_bad', 400 * luckyFactor));
       } else {
         this.balloonsArray.push(this.buildBalloon('green', 'normal', 150));
@@ -178,9 +195,9 @@ class Game {
   }
 
   updateGame() {
-    if (!this.config.is_paused && !this.config.has_finished) {
+    if (!this.config.isPaused && !this.config.hasFinished) {
       this.densityStep += this.config.density;
-      if (this.densityStep >= 1 && this.balloonsArray.length < this.config.max_balloon_quantity) {
+      if (this.densityStep >= 1 && this.balloonsArray.length < this.config.maxBalloonQuantity) {
         this.generateBalloons();
         this.densityStep = 0;
       }
@@ -188,29 +205,43 @@ class Game {
       this.balloonsArray.forEach((element) => {
         const newPos = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
         element.el.style.bottom = newPos + 'px';
-        if (element.type === 'special' && !this.config.special_balloon) {
+        if (element.type === 'special' && !this.config.specialBalloon) {
           element.el.style.display = 'none';
         } else if (element.type === 'special') {
           element.el.style.display = 'block';
         }
 
-        if (element.type.startsWith('surprise') && !this.config.surprise_balloon) {
+        if (element.type.startsWith('surprise') && !this.config.surpriseBalloon) {
           element.el.style.display = 'none';
         } else if (element.type.startsWith('surprise')) {
           element.el.style.display = 'block';
         }
       });
-    } else if (this.config.is_paused && this.backMusic) {
+    } else if (this.config.isPaused && this.backMusic) {
       this.backMusic.pause();
     }
-    if (this.config.has_finished) {
+    if (this.config.hasFinished) {
       this.endGame();
     }
   }
 
+  buildGameOverMessage(firstPlayerDoc) {
+    let gameOverText = 'GAME OVER\n\n';
+    if (firstPlayerDoc.exists) {
+      if (firstPlayerDoc.data().id === this.id) {
+        gameOverText += 'I\'m the winner!\n ';
+      }
+      gameOverText += ('Congratulations ' + firstPlayerDoc.data().name + '!\n');
+      gameOverText += ('Winner! \n\n' + firstPlayerDoc.data().score + ' points');
+    } else {
+      gameOverText += 'Leader board is empty';
+    }
+    return gameOverText;
+  }
+
   endGame() {
     this.pauseLocalGame();
-    this.database.collection('players')
+    database.collection('players')
       .orderBy('score', 'desc')
       .limit(1)
       .get()
@@ -223,16 +254,7 @@ class Game {
           document.getElementById('modal-result').style.display = 'grid';
           document.getElementById('modal-content-result').style.display = 'grid';
           document.getElementById('result').style.display = 'block';
-          document.getElementById('result').innerText += 'GAME OVER\n\n';
-          if (doc.exists) {
-            if (doc.data().id === this.id) {
-              document.getElementById('result').innerText += 'I\'m the winner!\n ';
-            }
-            document.getElementById('result').innerText += ('Congratulations ' + doc.data().name + '!\n');
-            document.getElementById('result').innerText += ('Winner! \n\n' + doc.data().score + ' points');
-          } else {
-            document.getElementById('result').innerText += 'Leader board is empty';
-          }
+          document.getElementById('result').innerText = this.buildGameOverMessage(doc);
         });
 
       })
@@ -246,9 +268,6 @@ class Game {
     this.score = 0;
     this.densityStep = 1;
 
-    this.updateTime = 50;
-    this.balloonInitialWidth = 40;
-    this.balloonInitialHeight = 53;
   }
 }
 
@@ -261,15 +280,16 @@ class Balloon {
   }
 }
 
-handleStartButtonClick = (game) => {
-  game.name = document.getElementById('name').value;
-  if (game.name != null && game.name.trim() != '') {
+function handleStartButtonClick(game) {
+  let name = document.getElementById('name').value + '';
+  if (name && name.trim().length !== 0) {
     document.getElementById('modal').style.display = 'none';
     document.getElementById('modal-content').style.display = 'none';
     document.getElementById('message').style.display = 'none';
     game.id = createUUID();
+    game.name = name;
     game.nameElem.innerHTML = game.name + '(...' + game.id.slice(game.id.length - 5) + ')';
-    game.database.collection('players')
+    database.collection('players')
       .doc(game.id)
       .set({
         name: game.name,
@@ -286,22 +306,21 @@ handleStartButtonClick = (game) => {
     document.getElementById('message').style.display = 'block';
   }
 
-};
+}
 
-setupInitialEvents = (game) => {
+function setupInitialEvents(game) {
   document.getElementById('start-btn').onclick = () => {
     handleStartButtonClick(game);
   };
 
-  document.getElementById("name")
-    .addEventListener("keyup", function(event) {
+  document.getElementById('name')
+    .addEventListener('keyup', function (event) {
       event.preventDefault();
-      console.log(event.key);
       if (event.key === 'Enter') {
         handleStartButtonClick(game);
       }
     });
-};
+}
 
 window.addEventListener('load', () => {
   const game = new Game();
