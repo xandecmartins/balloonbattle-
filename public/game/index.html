@@ -1,6 +1,6 @@
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1"">
     <link rel="stylesheet" type="text/css" href="css/game.css">
     <link rel="shortcut icon" href="images/balloon-battle.ico"/>
 </head>
@@ -9,17 +9,23 @@
     <div id="canvas">
     </div>
     <div id="score-label">
-        Score: <span id="score-count">0</span>
+        <span id="score-text">Score:</span>
+        <span id="score-count">0</span>
     </div>
 
     <div id="name-label">
         <span id="name-show"></span>
     </div>
 
+    <div id="id-label">
+        <span id="id-show"></span>
+    </div>
+
     <div id="modal">
         <div id="modal-content">
+            <span id="welcome">Welcome to Balloon Battle</span><br/>
             <span id="message">Please, inform your name to start</span>
-            <input id="name" type="text" name="name" maxlength="20" placeholder="Name"><br><br>
+            <input id="name" type="text" name="name" maxlength="8" placeholder="Name"><br><br>
             <button id="start-btn">Play</button>
         </div>
     </div>
@@ -30,6 +36,39 @@
     </div>
 </div>
 
+<script type="text/javascript">
+  function TableHeight()
+  {
+    let myWidth;
+    let myHeight;
+    if (typeof (window.innerWidth) == 'number')
+    {
+//Non-IE
+      myWidth = window.innerWidth;
+      myHeight = window.innerHeight;
+    }
+    else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight))
+    {
+//IE 6+ in 'standards compliant mode'
+      myWidth = document.documentElement.clientWidth;
+      myHeight = document.documentElement.clientHeight;
+    }
+    else if (document.body && (document.body.clientWidth || document.body.clientHeight))
+    {
+//IE 4 compatible
+      myWidth = document.body.clientWidth;
+      myHeight = document.body.clientHeight;
+    }
+    let finalWidth = (myWidth-20*myWidth/100);
+    let finalHeight = (myHeight-5*myHeight/100);
+    document.getElementById('main-wrapper').style.height = finalHeight + 'px';
+    document.getElementById('main-wrapper').style.width = finalWidth>450?450:finalWidth + 'px';
+    document.getElementById('canvas').style.height = finalHeight + 'px';
+    document.getElementById('canvas').style.width = finalWidth>450?450:finalWidth + 'px';
+
+  }
+  TableHeight();
+</script>
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="js/firebase.js"></script>
 <script src="js/game.js"></script>

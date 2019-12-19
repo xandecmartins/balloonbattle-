@@ -69,7 +69,9 @@ class Game {
   canvasElement = document.getElementById('canvas');
   playElement = document.getElementById('start-btn');
   scoreElem = document.getElementById('score-count');
+  scoreTextElem = document.getElementById('score-text');
   nameElem = document.getElementById('name-show');
+  idElem = document.getElementById('id-show');
 
   constructor() {
     const thiz = this;
@@ -104,6 +106,9 @@ class Game {
             isPaused: doc.data().is_paused,
             hasFinished: doc.data().has_finished,
             density: doc.data().density,
+            showName: doc.data().show_name,
+            showScore: doc.data().show_score,
+            showId: doc.data().show_id,
           };
           this.applyConfig();
         } else {
@@ -116,6 +121,9 @@ class Game {
             isPaused: false,
             hasFinished: false,
             density: 1000 / 4000,
+            showName: true,
+            showScore: true,
+            showId: true,
           };
           console.log('Config doesn\'t exist on the server, using default values');
         }
@@ -140,7 +148,7 @@ class Game {
 
   buildBalloon(color, type, points) {
     const tempBalloon = new Balloon(0, -balloonInitialHeight * this.config.balloonSize, color, type, points);
-    tempBalloon.positionX = generateRandomXPos(450);
+    tempBalloon.positionX = generateRandomXPos(parseInt(this.canvasElement.style.width,10)*0.95);
 
     const el = document.createElement('div');
     el.className = 'balloon ' + tempBalloon.color;
@@ -172,6 +180,27 @@ class Game {
     if (!this.config.isPaused && !this.config.hasFinished && this.backMusic) {
       this.backMusic.play();
     }
+
+    if(this.config.showId){
+      this.idElem.style.display = 'block';
+    } else {
+      this.idElem.style.display = 'none';
+    }
+
+    if(this.config.showName){
+      this.nameElem.style.display = 'block';
+    } else {
+      this.nameElem.style.display = 'none';
+    }
+
+    if(this.config.showScore){
+      this.scoreElem.style.display = 'inline';
+      this.scoreTextElem.style.display = 'inline';
+    } else {
+      this.scoreElem.style.display = 'none';
+      this.scoreTextElem.style.display = 'none';
+    }
+
 
     this.balloonsArray.forEach((element) => {
       element.el.style.width = balloonInitialWidth * this.config.balloonSize + 'px';
@@ -288,7 +317,8 @@ function handleStartButtonClick(game) {
     document.getElementById('message').style.display = 'none';
     game.id = createUUID();
     game.name = name;
-    game.nameElem.innerHTML = game.name + '(...' + game.id.slice(game.id.length - 5) + ')';
+    game.nameElem.innerHTML = game.name;
+    game.idElem.innerHTML = 'player id: ' + game.id;
     database.collection('players')
       .doc(game.id)
       .set({
