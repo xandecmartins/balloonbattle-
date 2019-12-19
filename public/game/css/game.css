@@ -1,41 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Contrail+One');
 
-@media screen and (min-width: 800px) { /*The following CSS runs only for displays with a width (in pixels) of more than 800px*/
-    body {
-        background-color: lightblue;
-    }
-}
-
-@media screen and (max-width: 800px) { /*The following CSS runs only for displays with a width (in pixels) of less than 800px*/
-    body {
-        background-color: yellow;
-    }
-}
-
-body {
-    /* Location of the image */
-    background-image: url('../images/realistic-sky-background_1048-2771.jpg');
-
-    /* Background image is centered vertically and horizontally at all times */
-    background-position: center center;
-
-    /* Background image doesn't tile */
-    background-repeat: no-repeat;
-
-    /* Background image is fixed in the viewport so that it doesn't move when
-       the content's height is greater than the image's height */
-    background-attachment: fixed;
-
-    /* This is what makes the background image rescale based
-       on the container's size */
-    background-size: cover;
-
-    /* Set a background color that will be displayed
-       while the background image is loading */
-    background-color: #464646;
-
-}
-
 #main-wrapper {
     position: relative;
     margin: 0 auto;
@@ -76,7 +40,7 @@ body {
 
 #id-label {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     right: 10px;
     font-family: 'Contrail One', cursive;
     font-size: 10px;
