@@ -127,7 +127,6 @@ Game.prototype.restartGame = function () {
 
   canvasElement = document.createElement('div');
   canvasElement.setAttribute('id', 'canvas');
-  canvasElement.setAttribute('style.width', canvasStyle.width);
   canvasContainerElement.appendChild(canvasElement);
   modalResultElem.style.display = 'none';
   modalContentResultElem.style.display = 'none';
