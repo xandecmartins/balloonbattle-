@@ -336,8 +336,8 @@ class Game {
     }
 
     canvasElement.style.display = 'none';
-    modalResultElem.style.display = 'grid';
-    modalContentResultElem.style.display = 'grid';
+    modalResultElem.style.display = 'block';
+    modalContentResultElem.style.display = 'block';
     resultElem.style.display = 'block';
     resultElem.innerText = text;
   }
