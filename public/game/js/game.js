@@ -26,11 +26,11 @@ function getPlayerRefById(id) {
 }
 
 const soundMap = {
-  'normal': new Audio('sounds/balloon-pop-sound-effect.mp3'),
-  'special': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
-  'surprise_good': new Audio('sounds/cash-register-kaching-sound-effect-hd.mp3'),
-  'surprise_bad': new Audio('sounds/explosion-sound-effect.mp3'),
-  'background_music': new Audio('sounds/top-gear-soundtrack-track-1.mp3'),
+  'normal': 'sounds/balloon-pop-sound-effect.mp3',
+  'special': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
+  'surprise_good': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
+  'surprise_bad': 'sounds/explosion-sound-effect.mp3',
+  'background_music': 'sounds/top-gear-soundtrack-track-1.mp3',
 };
 
 //<-------------------------- Util Functions -------------------------->
@@ -182,7 +182,13 @@ Game.prototype.updateScore = function (score, type) {
       score: score,
     })
     .then(function () {
-      soundMap[type].play();
+      const soundEffect = new Audio(soundMap[type]);
+      soundEffect.src = soundMap[type];
+      soundEffect.play()
+        .catch((error) => {
+          console.log('Problem during audio play', error);
+        });
+
     })
     .catch(function (error) {
       console.log('Data could not be saved.' + error);
@@ -231,12 +237,9 @@ Game.prototype.applyConfig = function () {
     this.restartGame();
   }
 
-  if (!this.config.isPaused && this.backMusic) {
-    this.backMusic.play()
-      .catch((error) => {
-        console.log('Problem during audio play', error);
-      });
-  } else {
+  if (!this.config.isPaused && this.backMusic && this.backMusic.paused) {
+    this.playBackgroundMusic();
+  } else if (this.config.isPaused) {
     this.backMusic.pause();
   }
 
@@ -373,6 +376,19 @@ Game.prototype.endGame = function () {
     });
 };
 
+Game.prototype.playBackgroundMusic = function () {
+  if(this.backMusic){
+    this.backMusic.pause();
+  }
+  this.backMusic = new Audio(soundMap['background_music']);
+  this.backMusic.loop = true;
+  this.backMusic.volume = 0.3;
+  this.backMusic.play()
+    .catch((error) => {
+      console.log('Problem during audio play', error);
+    });
+};
+
 Game.prototype.initGame = function () {
   this.hasLocalFinished = false;
   this.spriteArray = [];
@@ -385,14 +401,6 @@ Game.prototype.initGame = function () {
   if (!canvasWidth) {
     canvasWidth = parseInt(canvasElement.style.height.replace('px', ''), 10);
   }
-
-  this.backMusic = soundMap['background_music'];
-  this.backMusic.loop = true;
-  this.backMusic.volume = 0.3;
-  this.backMusic.play()
-    .catch((error) => {
-      console.log('Problem during audio play', error);
-    });
 };
 
 //<-------------------------- Env event setup and load -------------------------->
@@ -400,6 +408,7 @@ Game.prototype.initGame = function () {
 function handleStartButtonClick(game) {
   let name = nameBoxElem.value + '';
   if (name && name.trim().length !== 0) {
+    game.playBackgroundMusic();
     game.hud.id = createUUID();
     game.hud.name = name;
 
