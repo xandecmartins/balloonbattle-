@@ -1,0 +1,25 @@
+{
+  "name": "balloonbattle",
+  "version": "1.0.0",
+  "description": "Pop Ballon Multiplayer Battle",
+  "main": "index.js",
+  "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xandecmartins/balloonbattle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xandecmartins/balloonbattle/issues"
+  },
+  "homepage": "https://github.com/xandecmartins/balloonbattle#readme"
+}

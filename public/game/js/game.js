@@ -56,8 +56,8 @@ function generateRandomXPos(limit) {
 
 //<-------------------------- Constants and HTML Reference -------------------------->
 
-const balloonInitialWidth = 40;
-const balloonInitialHeight = 53;
+const spriteInitialWidth = 40;
+const spriteInitialHeight = 53;
 const updateTime = 50;
 let canvasHeight = 450;
 
@@ -116,7 +116,7 @@ class Game {
 
   intervalId;
   densityStep;
-  balloonsArray;
+  spriteArray;
 
   startGame() {
     startPlayElement.style.display = 'none';
@@ -134,11 +134,11 @@ class Game {
       .onSnapshot(doc => {
         if (doc.exists) {
           this.config = {
-            balloonSize: doc.data().balloon_size,
-            specialBalloon: doc.data().special_balloon,
-            surpriseBalloon: doc.data().surprise_balloon,
+            spriteSize: doc.data().balloon_size,
+            specialSprite: doc.data().special_balloon,
+            surpriseSprite: doc.data().surprise_balloon,
             baseSpeed: doc.data().base_speed,
-            maxBalloonQuantity: doc.data().max_balloon_quantity,
+            maxSpriteQuantity: doc.data().max_balloon_quantity,
             isPaused: doc.data().is_paused,
             hasFinished: doc.data().has_finished,
             density: doc.data().density,
@@ -149,11 +149,11 @@ class Game {
           this.applyConfig();
         } else {
           this.config = {
-            balloonSize: 1,
-            specialBalloon: true,
-            surpriseBalloon: true,
+            spriteSize: 1,
+            specialSprite: true,
+            surpriseSprite: true,
             baseSpeed: 201,
-            maxBalloonQuantity: 500,
+            maxSpriteQuantity: 500,
             isPaused: false,
             hasFinished: false,
             density: 1000 / 4000,
@@ -183,17 +183,17 @@ class Game {
   }
 
   buildSprite(color, type, points) {
-    const sprite = new Sprite(0, -balloonInitialHeight * this.config.balloonSize, color, type, points,
+    const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, color, type, points,
       getRandomSpeed(this.config.baseSpeed));
     sprite.positionX = generateRandomXPos(parseInt(canvasElement.style.width, 10) * 0.95);
 
     const el = document.createElement('div');
-    el.className = 'balloon ' + sprite.color;
+    el.className = 'sprite ' + sprite.color;
     el.style.left = sprite.positionX + 'px';
     el.style.bottom = sprite.positionY + 'px';
     el.style.backgroundSize = '100% 100%';
-    el.style.width = balloonInitialWidth * this.config.balloonSize + 'px';
-    el.style.height = balloonInitialHeight * this.config.balloonSize + 'px';
+    el.style.width = spriteInitialWidth * this.config.spriteSize + 'px';
+    el.style.height = spriteInitialHeight * this.config.spriteSize + 'px';
 
     const gameRef = this;
     el.onclick = () => {
@@ -216,8 +216,13 @@ class Game {
 
   applyConfig() {
 
-    if (this.config.hasFinished) {
+    if(this.config.hasFinished){
+      modalElem.style.display = 'none';
+      modalContentElem.style.display = 'none';
       this.endGame();
+    } else {
+      modalResultElem.style.display = 'none';
+      modalContentResultElem.style.display = 'none';
     }
 
     if (!this.config.isPaused && !this.config.hasFinished && this.backMusic) {
@@ -244,9 +249,9 @@ class Game {
       scoreTextElem.style.display = 'none';
     }
 
-    this.balloonsArray.forEach((element) => {
-      element.el.style.width = balloonInitialWidth * this.config.balloonSize + 'px';
-      element.el.style.height = balloonInitialHeight * this.config.balloonSize + 'px';
+    this.spriteArray.forEach((element) => {
+      element.el.style.width = spriteInitialWidth * this.config.spriteSize + 'px';
+      element.el.style.height = spriteInitialHeight * this.config.spriteSize + 'px';
       element.speed = getRandomSpeed(this.config.baseSpeed);
     });
   }
@@ -254,29 +259,29 @@ class Game {
   generateSprites() {
     for (let i = 0; i < parseInt(this.densityStep, 10); i++) {
       let randomType = Math.floor(Math.random() * 100);
-      let luckyFactor = getLuckyFactor();
-      if (this.config.specialBalloon && (randomType % 25 === 0)) {
-        this.balloonsArray.push(this.buildSprite('special', 'special', 300));
-      } else if (this.config.surpriseBalloon && (randomType % 20 === 0)) {
-        this.balloonsArray.push(this.buildSprite('surprise', luckyFactor > 0 ? 'surprise_good' : 'surprise_bad', 400 * luckyFactor));
+      if (this.config.specialSprite && (randomType % 20 === 0)) {
+        this.spriteArray.push(this.buildSprite('special', 'special', 300));
+      } else if (this.config.surpriseSprite && (randomType % 15 === 0)) {
+        let luckyFactor = getLuckyFactor();
+        this.spriteArray.push(this.buildSprite('surprise', luckyFactor > 0 ? 'surprise_good' : 'surprise_bad', 400 * luckyFactor));
       } else {
-        this.balloonsArray.push(this.buildSprite('green', 'normal', 150));
+        this.spriteArray.push(this.buildSprite('green', 'normal', 150));
       }
     }
   }
 
   moveSprites() {
-    this.balloonsArray.forEach((element) => {
+    this.spriteArray.forEach((element) => {
       const newPos = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
       element.el.style.bottom = newPos + 'px';
       element.bottom = newPos;
-      if (element.type === 'special' && !this.config.specialBalloon) {
+      if (element.type === 'special' && !this.config.specialSprite) {
         element.el.style.display = 'none';
       } else if (element.type === 'special') {
         element.el.style.display = 'block';
       }
 
-      if (element.type.startsWith('surprise') && !this.config.surpriseBalloon) {
+      if (element.type.startsWith('surprise') && !this.config.surpriseSprite) {
         element.el.style.display = 'none';
       } else if (element.type.startsWith('surprise')) {
         element.el.style.display = 'block';
@@ -287,7 +292,7 @@ class Game {
   updateGame() {
     if (!this.config.isPaused && !this.config.hasFinished) {
       this.densityStep += this.config.density;
-      if (this.densityStep >= 1 && this.balloonsArray.length < this.config.maxBalloonQuantity) {
+      if (this.densityStep >= 1 && this.spriteArray.length < this.config.maxSpriteQuantity) {
         this.generateSprites();
         this.densityStep = 0;
       }
@@ -297,8 +302,8 @@ class Game {
       this.backMusic.pause();
     }
 
-    if (this.balloonsArray.length === this.config.maxBalloonQuantity
-      && Math.min.apply(Math, this.balloonsArray.map(el => el.bottom)) >= canvasHeight + balloonInitialHeight * this.config.balloonSize) {
+    if (this.spriteArray.length === this.config.maxSpriteQuantity
+      && Math.min.apply(Math, this.spriteArray.map(el => el.bottom)) >= canvasHeight + spriteInitialHeight * this.config.spriteSize) {
       this.pauseLocalGame();
       this.showResult(this.buildWaitMessage());
     }
@@ -355,7 +360,7 @@ class Game {
   }
 
   initGame() {
-    this.balloonsArray = [];
+    this.spriteArray = [];
     this.hud = new HUD();
     this.densityStep = 1;
     canvasHeight = parseInt(canvasElement.style.height.replace('px', ''), 10);
@@ -400,6 +405,7 @@ function handleStartButtonClick(game) {
 }
 
 function setupInitialEvents(game) {
+
   startPlayElement.onclick = () => {
     handleStartButtonClick(game);
   };
