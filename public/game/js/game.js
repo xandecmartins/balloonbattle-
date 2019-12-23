@@ -63,7 +63,6 @@ let canvasHeight;
 let canvasWidth;
 
 let canvasElement = document.getElementById('canvas');
-const canvasStyle = canvasElement.style;
 const canvasContainerElement = document.getElementById('canvas-container');
 const startPlayElement = document.getElementById('start-btn');
 const nameBoxElem = document.getElementById('name');
@@ -233,7 +232,10 @@ Game.prototype.applyConfig = function () {
   }
 
   if (!this.config.isPaused && this.backMusic) {
-    this.backMusic.play();
+    this.backMusic.play()
+      .catch((error) => {
+        console.log('Problem during audio play', error);
+      });
   } else {
     this.backMusic.pause();
   }
@@ -387,7 +389,10 @@ Game.prototype.initGame = function () {
   this.backMusic = soundMap['background_music'];
   this.backMusic.loop = true;
   this.backMusic.volume = 0.3;
-  this.backMusic.play();
+  this.backMusic.play()
+    .catch((error) => {
+      console.log('Problem during audio play', error);
+    });
 };
 
 //<-------------------------- Env event setup and load -------------------------->
