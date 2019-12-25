@@ -26,7 +26,7 @@ table.minimalistBlack thead th {
     font-size: 15px;
     font-weight: bold;
     color: #000000;
-    text-align: left;
+    text-align: center;
 }
 
 table.minimalistBlack tfoot {
@@ -38,4 +38,35 @@ table.minimalistBlack tfoot {
 
 table.minimalistBlack tfoot td {
     font-size: 14px;
+}
+
+.trophy {
+    width: 50px;
+    height: 50px;
+}
+
+.column-table {
+    text-align: center;
+}
+
+.column-score-table {
+    text-align: right;
+}
+
+.player-container {
+    left: 20%;
+    position: relative;
+    width: 60%;
+    height: 100px;
+    display: block;
+    margin-bottom: 5%;
+}
+.summary-player-first {
+    width: 50%;
+    height: 100px;
+    float: left;
+}
+.summary-player-last {
+    margin-left: 50%;
+    height: 100px;
 }
