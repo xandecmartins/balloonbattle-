@@ -13,32 +13,53 @@ firebase.initializeApp(firebaseConfig);
 
 let firstPlayerId;
 let lastPlayerId;
+
+
+const updateTime = 1000;
+const intervalID = setInterval(() => {
+  this.updateRanking();
+}, updateTime);
 const newLeaderAudio = new Audio('./sounds/leader.mp3');
-const newLanternAudio = new Audio('./sounds/lantern.mp3');
+const rankingTable = document.getElementById('ranking-table');
+
+
+
+function clearTable(){
+  for(let i = 2; i < rankingTable.rows.length;)
+  {
+    rankingTable.deleteRow(i);
+  }
+}
+
+function formatPopTime(popTime){
+  if(popTime) {
+    const diff = (new Date().getTime() - popTime) / 1000;
+
+    if (diff > 60) {
+      return '<span>> 60 sec</span> <img src="./images/iconfinder_bullet_red_35785.png" />'
+    } else {
+      return '<span>'+Math.round(diff)  + ' sec</span> <img src="./images/iconfinder_bullet_green_35779.png" />';
+    }
+  } else {
+    return popTime + ' <img src="./images/iconfinder_question_64560.png" />';
+  }
+}
 
 function updateRanking() {
 
   firebase.firestore()
     .collection('players')
-    .where('score', '>', 0)
     .orderBy('score', 'desc')
     .onSnapshot(snapshot => {
-      const showList = document.getElementById('showList');
-      showList.innerHTML = '';
 
-      let html = '<table class="minimalistBlack"><thead><tr>';
-      html += '<th>Position</th>';
-      html += '<th>Id</th>';
-      html += '<th>Name</th>';
-      html += '<th>Score</th>';
-      /* add further columns into here, alike the one above. */
-      html += '</tr></thead><tbody>';
+      clearTable();
+
       let pos = 1;
 
       snapshot.forEach(doc => {
+        const row = rankingTable.insertRow(-1);
         let iconTrophy = pos;
         if (pos === 1) {
-          console.log(firstPlayerId);
           if (firstPlayerId !== doc.data().id) {
             firstPlayerId = doc.data().id;
             newLeaderAudio.play()
@@ -46,6 +67,7 @@ function updateRanking() {
                 console.log('Problem during audio play', error);
               });
           }
+
           iconTrophy = '<img class="trophy" src="./images/trophy.png"/>';
           document.getElementById('nameFirst').innerText = doc.data().name;
           document.getElementById('idFirst').innerText = doc.data().id;
@@ -61,22 +83,28 @@ function updateRanking() {
           document.getElementById('scoreLast').innerText = doc.data().score;
         }
 
-        html += '<tr>';
+        const positionCell = row.insertCell(0);
+        positionCell.setAttribute('class', "column-table");
+        positionCell.innerHTML = iconTrophy+'';
 
-        html += '<td class="column-table">' + iconTrophy + '</td>';
+        const idCell = row.insertCell(1);
+        idCell.setAttribute('class', "column-table");
+        idCell.innerHTML = doc.data().id;
 
-        html += '<td class="column-table">' + doc.data().id + '</td>';
+        const nameCell = row.insertCell(2);
+        nameCell.setAttribute('class', "column-table");
+        nameCell.innerHTML = doc.data().name;
 
-        html += '<td class="column-table">' + doc.data().name + '</td>';
+        const scoreCell = row.insertCell(3);
+        scoreCell.setAttribute('class', "column-score-table");
+        scoreCell.innerHTML =  doc.data().score;
 
-        html += '<td class="column-score-table">' + doc.data().score + '</td>';
-
-        html += '</tr>';
+        const popTimeCell = row.insertCell(4);
+        popTimeCell.setAttribute('class', "column-score-table");
+        popTimeCell.innerHTML =  formatPopTime(doc.data().timestamp);
+        console.log(formatPopTime(doc.data().timestamp));
         pos++;
       });
-      html += '</tbody></table>';
-
-      showList.insertAdjacentHTML('beforeend', html);
     });
 }
 

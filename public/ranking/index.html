@@ -1,39 +1,54 @@
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="css/ranking.css">
-    </head>
-    <body>
-        <div class="container">
-            <h2>Ranking</h2>
-
-            <div id="summary" class="player-container">
-                <fieldset >
-                    <legend>Leaderboard Summary</legend>
-
-                    <div id="firstPLayerContainer" class="summary-player-first">
-                        <h3>First Place</h3>
-                        <span id="nameFirstLabel">Name: </span><span id="nameFirst"></span><br>
-                        <span id="idFirstLabel">Id: </span><span id="idFirst"></span><br>
-                        <span id="scoreFirstLabel">Score: </span><span id="scoreFirst"></span>
-                    </div>
-                    <div id="lastPLayerContainer" class="summary-player-last">
-                        <h3>Last Place</h3>
-                        <span id="nameLastLabel">Name: </span><span id="nameLast"></span><br>
-                        <span id="idLastLabel">Id: </span><span id="idLast"></span><br>
-                        <span id="scoreLastLabel">Score: </span><span id="scoreLast"></span>
-                    </div>
-                </fieldset>
-
+<head>
+    <link rel="stylesheet" type="text/css" href="css/ranking.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<div class="container">
+    <h1>Ranking</h1>
+    <div id="summary" class="player-container">
+        <fieldset>
+            <legend>Leader Board Summary</legend>
+            <div id="firstPLayerContainer" class="summary-player-first">
+                <h3>First Place</h3>
+                <span id="nameFirstLabel" class="player-summary-label">Name: </span><span id="nameFirst"></span><br>
+                <span id="idFirstLabel" class="player-summary-label">Id: </span><span id="idFirst"></span><br>
+                <span id="scoreFirstLabel" class="player-summary-label">Score: </span><span id="scoreFirst"></span>
+                <img src="images/boss.png"width="50px" height="50px" />
             </div>
+            <div id="lastPLayerContainer" class="summary-player-last">
+                <h3>Last Place</h3>
+                <span id="nameLastLabel" class="player-summary-label">Name: </span><span id="nameLast"></span><br>
+                <span id="idLastLabel" class="player-summary-label">Id: </span><span id="idLast"></span><br>
+                <span id="scoreLastLabel" class="player-summary-label">Score: </span><span id="scoreLast"></span>
+                <img src="images/feelsbad.png" width="50px" height="50px"/>
+            </div>
+        </fieldset>
+    </div>
+    <div id="ranking-container">
+        <table id="ranking-table" class="minimalistBlack">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Score</th>
+                    <th>Last Pop</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+            </tbody>
+        </table>
+    </div>
 
-            <div id="showList"></div>
-            <!-- The core Firebase JS SDK is always required and must be listed first -->
-            <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>
 
-            <script src="js/ranking.js"></script>
-        </div>
-    </body>
+    <script src="js/ranking.js"></script>
+</div>
+</body>
 </html>
 
 

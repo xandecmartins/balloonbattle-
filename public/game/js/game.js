@@ -179,6 +179,7 @@ Game.prototype.updateScore = function (score, type) {
   getPlayerRefById(this.hud.id)
     .update({
       score: score,
+      timestamp: new Date().getTime(),
     })
     .then(function () {
       const soundEffect = new Audio(soundMap[type]);
@@ -356,7 +357,9 @@ Game.prototype.showResult = function (text) {
 };
 
 Game.prototype.endGame = function () {
-  this.backMusic.pause();
+  if (this.backMusic) {
+    this.backMusic.pause();
+  }
   this.hasLocalFinished = true;
   this.pauseLocalGame();
   this.clearPlayArea();
@@ -376,7 +379,7 @@ Game.prototype.endGame = function () {
 };
 
 Game.prototype.playBackgroundMusic = function () {
-  if(this.backMusic){
+  if (this.backMusic) {
     this.backMusic.pause();
   }
   this.backMusic = new Audio(soundMap['background_music']);
@@ -419,6 +422,7 @@ function handleStartButtonClick(game) {
         name: game.hud.name,
         id: game.hud.id,
         score: game.hud.score,
+        timestamp: new Date().getTime(),
       })
       .then(() => {
         game.startGame();
