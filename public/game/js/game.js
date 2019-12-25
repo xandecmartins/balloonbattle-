@@ -123,7 +123,6 @@ Game.prototype.restartGame = function () {
   }, updateTime);
   this.pauseLocalGame();
   this.initGame();
-
   canvasElement = document.createElement('div');
   canvasElement.setAttribute('id', 'canvas');
   canvasContainerElement.appendChild(canvasElement);
@@ -393,6 +392,8 @@ Game.prototype.initGame = function () {
   this.hasLocalFinished = false;
   this.spriteArray = [];
   this.hud = new HUD();
+  scoreLabelElem.innerHTML = this.hud.score;
+  nameLabelElem.innerHTML = '';
   this.densityStep = 1;
 
   if (!canvasHeight) {
