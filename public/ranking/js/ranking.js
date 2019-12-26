@@ -15,14 +15,12 @@ let firstPlayerId;
 let lastPlayerId;
 
 
-const updateTime = 1000;
-const intervalID = setInterval(() => {
-  this.updateRanking();
-}, updateTime);
+//const updateTime = 1000;
+//const intervalID = setInterval(() => {
+//  this.updateRanking();
+//}, updateTime);
 const newLeaderAudio = new Audio('./sounds/leader.mp3');
 const rankingTable = document.getElementById('ranking-table');
-
-
 
 function clearTable(){
   for(let i = 2; i < rankingTable.rows.length;)

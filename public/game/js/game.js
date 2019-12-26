@@ -68,6 +68,10 @@ const startPlayElement = document.getElementById('start-btn');
 const nameBoxElem = document.getElementById('name');
 const scoreLabelElem = document.getElementById('score-count');
 const scoreTextElem = document.getElementById('score-text');
+const windLabelElem = document.getElementById('wind-label');
+const windElem = document.getElementById('wind-show');
+const windTextElem = document.getElementById('wind-text');
+
 const nameLabelElem = document.getElementById('name-show');
 const idLabelElem = document.getElementById('id-show');
 const modalElem = document.getElementById('modal');
@@ -153,6 +157,8 @@ Game.prototype.loadServerConfig = function () {
           showName: doc.data().show_name,
           showScore: doc.data().show_score,
           showId: doc.data().show_id,
+          showWind: doc.data().show_wind,
+          windSpeed: doc.data().wind_speed,
         };
         this.applyConfig();
       } else {
@@ -168,6 +174,8 @@ Game.prototype.loadServerConfig = function () {
           showName: true,
           showScore: true,
           showId: true,
+          showWind: true,
+          windSpeed: 0,
         };
         console.log('Config doesn\'t exist on the server, using default values');
       }
@@ -224,11 +232,12 @@ Game.prototype.buildSprite = function (color, type, points) {
     points: sprite.points,
     type: type,
     bottom: sprite.positionY,
+    pos: sprite.positionX,
   };
 };
 
 Game.prototype.applyConfig = function () {
-
+  windElem.innerHTML = this.config.windSpeed;
   if (this.config.hasFinished) {
     modalElem.style.display = 'none';
     modalContentElem.style.display = 'none';
@@ -253,6 +262,12 @@ Game.prototype.applyConfig = function () {
     nameLabelElem.style.display = 'block';
   } else {
     nameLabelElem.style.display = 'none';
+  }
+
+  if(this.config.showWind) {
+    windLabelElem.style.display = 'inline';
+  } else {
+    windLabelElem.style.display = 'none';
   }
 
   if (this.config.showScore) {
@@ -286,9 +301,12 @@ Game.prototype.generateSprites = function () {
 
 Game.prototype.moveSprites = function () {
   this.spriteArray.forEach((element) => {
-    const newPos = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
-    element.el.style.bottom = newPos + 'px';
-    element.bottom = newPos;
+    const newPosUp = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
+    const newPos = parseInt(element.el.style.left, 10) + (this.config.windSpeed);
+    element.el.style.bottom = newPosUp + 'px';
+    element.el.style.left = newPos + 'px';
+    element.bottom = newPosUp;
+    element.pos = newPos;
     if (element.type === 'special' && !this.config.specialSprite) {
       element.el.style.display = 'none';
     } else if (element.type === 'special') {
@@ -397,6 +415,7 @@ Game.prototype.initGame = function () {
   this.hud = new HUD();
   scoreLabelElem.innerHTML = this.hud.score;
   nameLabelElem.innerHTML = '';
+  windElem.innerHTML = '0';
   this.densityStep = 1;
 
   if (!canvasHeight) {
