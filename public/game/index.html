@@ -25,13 +25,13 @@
     <div id="wind-label">
         <span id="wind-text">Wind:</span>
         <span id="wind-show"></span>
-        <img id="wind-img" src="images/wind.png" />
+        <img id="wind-img" src="images/wind.png"/>
     </div>
 
     <div id="modal" class="modal">
         <div id="modal-content" class="modal-content">
             <span id="welcome">Welcome to Balloon Battle</span><br/>
-            <span id="message">Please, inform your name to start</span>
+            <span id="message"></span>
             <input id="name" type="text" name="name" maxlength="8" placeholder="Name"><br><br>
             <div id="start-btn">Play</div>
         </div>
@@ -44,36 +44,31 @@
 </div>
 
 <script type="text/javascript">
-  function TableHeight()
-  {
+  function TableHeight() {
     let myWidth;
     let myHeight;
-    if (typeof (window.innerWidth) == 'number')
-    {
+    if (typeof (window.innerWidth) == 'number') {
 //Non-IE
       myWidth = window.innerWidth;
       myHeight = window.innerHeight;
-    }
-    else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight))
-    {
+    } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
 //IE 6+ in 'standards compliant mode'
       myWidth = document.documentElement.clientWidth;
       myHeight = document.documentElement.clientHeight;
-    }
-    else if (document.body && (document.body.clientWidth || document.body.clientHeight))
-    {
+    } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
 //IE 4 compatible
       myWidth = document.body.clientWidth;
       myHeight = document.body.clientHeight;
     }
-    let finalWidth = (myWidth-20*myWidth/100);
-    let finalHeight = (myHeight-5*myHeight/100);
+    let finalWidth = (myWidth - 20 * myWidth / 100);
+    let finalHeight = (myHeight - 5 * myHeight / 100);
     document.getElementById('main-wrapper').style.height = finalHeight + 'px';
-    document.getElementById('main-wrapper').style.width = finalWidth>450?450:finalWidth + 'px';
+    document.getElementById('main-wrapper').style.width = finalWidth > 450 ? 450 : finalWidth + 'px';
     document.getElementById('canvas').style.height = finalHeight + 'px';
-    document.getElementById('canvas').style.width = finalWidth>450?450:finalWidth + 'px';
+    document.getElementById('canvas').style.width = finalWidth > 450 ? 450 : finalWidth + 'px';
 
   }
+
   TableHeight();
 </script>
 <!-- The core Firebase JS SDK is always required and must be listed first -->

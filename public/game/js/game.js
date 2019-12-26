@@ -70,7 +70,6 @@ const scoreLabelElem = document.getElementById('score-count');
 const scoreTextElem = document.getElementById('score-text');
 const windLabelElem = document.getElementById('wind-label');
 const windElem = document.getElementById('wind-show');
-const windTextElem = document.getElementById('wind-text');
 
 const nameLabelElem = document.getElementById('name-show');
 const idLabelElem = document.getElementById('id-show');
@@ -159,6 +158,7 @@ Game.prototype.loadServerConfig = function () {
           showId: doc.data().show_id,
           showWind: doc.data().show_wind,
           windSpeed: doc.data().wind_speed,
+          gameOpen: doc.data().game_open,
         };
         this.applyConfig();
       } else {
@@ -176,6 +176,7 @@ Game.prototype.loadServerConfig = function () {
           showId: true,
           showWind: true,
           windSpeed: 0,
+          gameOpen: true,
         };
         console.log('Config doesn\'t exist on the server, using default values');
       }
@@ -264,7 +265,7 @@ Game.prototype.applyConfig = function () {
     nameLabelElem.style.display = 'none';
   }
 
-  if(this.config.showWind) {
+  if (this.config.showWind) {
     windLabelElem.style.display = 'inline';
   } else {
     windLabelElem.style.display = 'none';
@@ -428,12 +429,29 @@ Game.prototype.initGame = function () {
 
 //<-------------------------- Env event setup and load -------------------------->
 
+function validateStart(game, name) {
+  const messages = [];
+  if (!game.config.gameOpen) {
+    messages.push('* Wait until the next session, the game is closed');
+  }
+
+  if (!name || name.trim().length === 0) {
+    messages.push('* Please, inform your name to start');
+  }
+  return messages;
+}
+
 function handleStartButtonClick(game) {
   let name = nameBoxElem.value + '';
-  if (name && name.trim().length !== 0) {
+  const messages = validateStart(game, name);
+
+  if (messages) {
+    messageElem.style.display = 'block';
+    messageElem.innerText = messages.join('\n');
+  } else {
     game.playBackgroundMusic();
     game.hud.id = createUUID();
-    game.hud.name = name;
+    game.hud.name = name.trim();
 
     database.collection('players')
       .doc(game.hud.id)
@@ -455,8 +473,6 @@ function handleStartButtonClick(game) {
     messageElem.style.display = 'none';
     nameLabelElem.innerHTML = game.hud.name;
     idLabelElem.innerHTML = 'player id: ' + game.hud.id;
-  } else {
-    messageElem.style.display = 'block';
   }
 }
 

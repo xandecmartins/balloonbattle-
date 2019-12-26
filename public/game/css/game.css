@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Contrail+One');
 
-body{
+body {
     /* Location of the image */
     background-image: url('../images/realistic-sky-background_1048-2771.jpg');
 
@@ -123,9 +123,9 @@ body{
 }
 
 #message {
-    text-align: center;
+    text-align: left;
     font-family: 'Contrail One', cursive;
-    color: #ff0000;
+    color: #ffff00;
     display: none;
 }
 
@@ -148,10 +148,6 @@ body{
     cursor: pointer;
     left: 50%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-#pause-btn {
-
 }
 
 .sprite.green {
