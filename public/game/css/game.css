@@ -150,7 +150,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-.sprite.green {
+.sprite.regular {
     position: absolute;
     background-image: url('../images/green-balloon.png');
     background-repeat: no-repeat;

@@ -26,43 +26,20 @@ function getPlayerRefById(id) {
 }
 
 const soundMap = {
-  'normal': 'sounds/balloon-pop-sound-effect.mp3',
+  'regular': 'sounds/balloon-pop-sound-effect.mp3',
   'special': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
   'surprise_good': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
   'surprise_bad': 'sounds/explosion-sound-effect.mp3',
   'background_music': 'sounds/top-gear-soundtrack-track-1.mp3',
 };
 
-//<-------------------------- Util Functions -------------------------->
-
-//src: https://gist.github.com/jed/982883
-function createUUID() {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16),
-  );
-}
-
-function getLuckyFactor() {
-  return Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1;
-}
-
-function getRandomSpeed(base_speed) {
-  return Math.floor(Math.random() * base_speed) / 100;
-}
-
-function generateRandomXPos(limit) {
-  return Math.floor(Math.random() * limit);
-}
-
 //<-------------------------- Constants and HTML Reference -------------------------->
 
 const spriteInitialWidth = 40;
 const spriteInitialHeight = 53;
 const updateTime = 50;
-let canvasHeight;
-let canvasWidth;
+const minimumSpeed = 3;
 
-let canvasElement = document.getElementById('canvas');
 const canvasContainerElement = document.getElementById('canvas-container');
 const startPlayElement = document.getElementById('start-btn');
 const nameBoxElem = document.getElementById('name');
@@ -79,6 +56,35 @@ const messageElem = document.getElementById('message');
 const modalResultElem = document.getElementById('modal-result');
 const modalContentResultElem = document.getElementById('modal-content-result');
 const resultElem = document.getElementById('result');
+
+let canvasHeight;
+let canvasWidth;
+let canvasElement = document.getElementById('canvas');
+
+//<-------------------------- Util Functions -------------------------->
+
+//src: https://gist.github.com/jed/982883
+function createUUID() {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16),
+  );
+}
+
+function getLuckyFactor() {
+  return Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1;
+}
+
+function getRandomSpeed(base_speed) {
+  return Math.floor(Math.random() * base_speed) / 100 + minimumSpeed;
+}
+
+function generateRandomXPos(limit) {
+  return Math.floor(Math.random() * limit);
+}
+
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
 //<-------------------------- Game Classes(Prototypes) -------------------------->
 
@@ -159,6 +165,11 @@ Game.prototype.loadServerConfig = function () {
           showWind: doc.data().show_wind,
           windSpeed: doc.data().wind_speed,
           gameOpen: doc.data().game_open,
+          showSpriteSpeed: doc.data().show_sprite_speed,
+          chanceSurprise: doc.data().chance_surprise,
+          chanceSpecial: doc.data().chance_special,
+          typeList: doc.data().type_list,
+          typeProbabilities: doc.data().type_probabilities,
         };
         this.applyConfig();
       } else {
@@ -166,7 +177,7 @@ Game.prototype.loadServerConfig = function () {
           spriteSize: 1,
           specialSprite: true,
           surpriseSprite: true,
-          baseSpeed: 201,
+          baseSpeed: 200,
           maxSpriteQuantity: 500,
           isPaused: false,
           hasFinished: false,
@@ -177,10 +188,43 @@ Game.prototype.loadServerConfig = function () {
           showWind: true,
           windSpeed: 0,
           gameOpen: true,
+          showSpriteSpeed: false,
+          chanceSurprise: 20,
+          chanceSpecial: 25,
+          typeList: ['regular', 'surprise', 'special'],
+          typeProbabilities: [0.5, 0.3, 0.2],
         };
         console.log('Config doesn\'t exist on the server, using default values');
       }
     });
+};
+
+Game.prototype.calculateNewPos = function (element) {
+  element.bottom += element.speed;
+  element.pos += this.config.windSpeed;
+};
+
+Game.prototype.drawSprite = function (sprite) {
+
+  if (this.config.showSpriteSpeed) {
+    sprite.el.innerHTML = Math.floor(sprite.speed * 100) / 100 + '';
+  } else {
+    sprite.el.innerHTML = '';
+  }
+
+  sprite.el.style.bottom = sprite.bottom + 'px';
+  sprite.el.style.left = sprite.pos + 'px';
+
+  if (sprite.type === 'special' && !this.config.specialSprite) {
+    sprite.el.style.display = 'none';
+  } else if (sprite.type === 'special') {
+    sprite.el.style.display = 'block';
+  }
+  if (sprite.type.startsWith('surprise') && !this.config.surpriseSprite) {
+    sprite.el.style.display = 'none';
+  } else if (sprite.type.startsWith('surprise')) {
+    sprite.el.style.display = 'block';
+  }
 };
 
 Game.prototype.updateScore = function (score, type) {
@@ -210,12 +254,18 @@ Game.prototype.buildSprite = function (color, type, points) {
   sprite.positionX = generateRandomXPos(canvasWidth * 0.95);
 
   const el = document.createElement('div');
+  const transformedHeight = spriteInitialHeight * this.config.spriteSize;
+  const transformedWidth = spriteInitialWidth * this.config.spriteSize;
+
   el.className = 'sprite ' + sprite.color;
   el.style.left = sprite.positionX + 'px';
   el.style.bottom = sprite.positionY + 'px';
   el.style.backgroundSize = '100% 100%';
-  el.style.width = spriteInitialWidth * this.config.spriteSize + 'px';
-  el.style.height = spriteInitialHeight * this.config.spriteSize + 'px';
+  el.style.width = transformedWidth + 'px';
+  el.style.height = transformedHeight + 'px';
+  el.style.textAlign = 'center';
+  el.style.verticalAlign = 'middle';
+  el.style.lineHeight = transformedHeight + 'px';
 
   const gameRef = this;
   el.onclick = () => {
@@ -234,6 +284,8 @@ Game.prototype.buildSprite = function (color, type, points) {
     type: type,
     bottom: sprite.positionY,
     pos: sprite.positionX,
+    width: transformedWidth,
+    height: transformedHeight,
   };
 };
 
@@ -286,39 +338,42 @@ Game.prototype.applyConfig = function () {
   });
 };
 
+Game.prototype.randomType = function (typeList, weight) {
+  const total_weight = weight.reduce(function (prev, cur, i, arr) {
+    return prev + cur;
+  });
+
+  const random_num = rand(0, total_weight);
+  let weight_sum = 0;
+
+  for (let i = 0; i < typeList.length; i++) {
+    weight_sum += weight[i];
+    weight_sum = +weight_sum.toFixed(2);
+
+    if (random_num <= weight_sum) {
+      return typeList[i];
+    }
+  }
+};
+
 Game.prototype.generateSprites = function () {
   for (let i = 0; i < parseInt(this.densityStep, 10); i++) {
-    let randomType = Math.floor(Math.random() * 100);
-    if (this.config.specialSprite && (randomType % 20 === 0)) {
-      this.spriteArray.push(this.buildSprite('special', 'special', 300));
-    } else if (this.config.surpriseSprite && (randomType % 15 === 0)) {
+    let randomType = this.randomType(this.config.typeList, this.config.typeProbabilities);
+    if (this.config.specialSprite && randomType === 'special') {
+      this.spriteArray.push(this.buildSprite(randomType, randomType, 300));
+    } else if (this.config.surpriseSprite && randomType === 'surprise') {
       let luckyFactor = getLuckyFactor();
-      this.spriteArray.push(this.buildSprite('surprise', luckyFactor > 0 ? 'surprise_good' : 'surprise_bad', 400 * luckyFactor));
-    } else {
-      this.spriteArray.push(this.buildSprite('green', 'normal', 150));
+      this.spriteArray.push(this.buildSprite(randomType, luckyFactor > 0 ? randomType + '_good' : randomType + '_bad', 400 * luckyFactor));
+    } else if (this.config.surpriseSprite && randomType === 'regular') {
+      this.spriteArray.push(this.buildSprite(randomType, randomType, 150));
     }
   }
 };
 
 Game.prototype.moveSprites = function () {
-  this.spriteArray.forEach((element) => {
-    const newPosUp = parseInt(element.el.style.bottom, 10) + (3 + element.speed);
-    const newPos = parseInt(element.el.style.left, 10) + (this.config.windSpeed);
-    element.el.style.bottom = newPosUp + 'px';
-    element.el.style.left = newPos + 'px';
-    element.bottom = newPosUp;
-    element.pos = newPos;
-    if (element.type === 'special' && !this.config.specialSprite) {
-      element.el.style.display = 'none';
-    } else if (element.type === 'special') {
-      element.el.style.display = 'block';
-    }
-
-    if (element.type.startsWith('surprise') && !this.config.surpriseSprite) {
-      element.el.style.display = 'none';
-    } else if (element.type.startsWith('surprise')) {
-      element.el.style.display = 'block';
-    }
+  this.spriteArray.forEach((sprite) => {
+    this.calculateNewPos(sprite);
+    this.drawSprite(sprite);
   });
 };
 
@@ -330,8 +385,9 @@ Game.prototype.updateGame = function () {
       this.densityStep = 0;
     }
     this.moveSprites();
+  }
 
-  } else if (this.config.isPaused && this.backMusic) {
+  if (this.config.isPaused && this.backMusic) {
     this.backMusic.pause();
   }
 
