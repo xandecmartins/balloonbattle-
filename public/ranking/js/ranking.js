@@ -14,11 +14,6 @@ firebase.initializeApp(firebaseConfig);
 let firstPlayerId;
 let lastPlayerId;
 
-
-//const updateTime = 1000;
-//const intervalID = setInterval(() => {
-//  this.updateRanking();
-//}, updateTime);
 const newLeaderAudio = new Audio('./sounds/leader.mp3');
 const rankingTable = document.getElementById('ranking-table');
 
@@ -32,7 +27,6 @@ function clearTable(){
 function formatPopTime(popTime){
   if(popTime) {
     const diff = (new Date().getTime() - popTime) / 1000;
-
     if (diff > 60) {
       return '<span>> 60 sec</span> <img src="./images/iconfinder_bullet_red_35785.png" />'
     } else {
@@ -100,7 +94,6 @@ function updateRanking() {
         const popTimeCell = row.insertCell(4);
         popTimeCell.setAttribute('class', "column-score-table");
         popTimeCell.innerHTML =  formatPopTime(doc.data().timestamp);
-        console.log(formatPopTime(doc.data().timestamp));
         pos++;
       });
     });

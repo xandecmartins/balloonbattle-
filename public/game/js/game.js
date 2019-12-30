@@ -247,7 +247,7 @@ Game.prototype.applyConfig = function () {
     this.restartGame();
   }
 
-  if (!this.config.isPaused && this.backMusic && this.backMusic.paused) {
+  if (!this.config.isPaused && this.backMusic && this.backMusic.paused && !this.hasLocalFinished) {
     this.playBackgroundMusic();
   } else if (this.config.isPaused) {
     this.backMusic.pause();
@@ -442,10 +442,10 @@ function validateStart(game, name) {
 }
 
 function handleStartButtonClick(game) {
+
   let name = nameBoxElem.value + '';
   const messages = validateStart(game, name);
-
-  if (messages) {
+  if (messages.length) {
     messageElem.style.display = 'block';
     messageElem.innerText = messages.join('\n');
   } else {
