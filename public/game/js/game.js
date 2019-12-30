@@ -25,20 +25,13 @@ function getPlayerRefById(id) {
     .doc(id);
 }
 
-const soundMap = {
-  'regular': 'sounds/balloon-pop-sound-effect.mp3',
-  'special': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
-  'surprise_good': 'sounds/cash-register-kaching-sound-effect-hd.mp3',
-  'surprise_bad': 'sounds/explosion-sound-effect.mp3',
-  'background_music': 'sounds/top-gear-soundtrack-track-1.mp3',
-};
-
 //<-------------------------- Constants and HTML Reference -------------------------->
 
 const spriteInitialWidth = 40;
 const spriteInitialHeight = 53;
 const updateTime = 50;
 const minimumSpeed = 3;
+const backgroundMusicPath = 'sounds/top-gear-soundtrack-track-1.mp3';
 
 const canvasContainerElement = document.getElementById('canvas-container');
 const startPlayElement = document.getElementById('start-btn');
@@ -70,10 +63,6 @@ function createUUID() {
   );
 }
 
-function getLuckyFactor() {
-  return Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1;
-}
-
 function getRandomSpeed(base_speed) {
   return Math.floor(Math.random() * base_speed) / 100 + minimumSpeed;
 }
@@ -94,11 +83,10 @@ function HUD() {
   this.score = 0;
 }
 
-function Sprite(x, y, color, type, points, speed) {
+function Sprite(x, y, type, points, speed) {
   this.id = createUUID();
   this.positionX = x;
   this.positionY = y;
-  this.color = color;
   this.points = points;
   this.speed = speed;
   this.type = type;
@@ -168,40 +156,18 @@ Game.prototype.loadServerConfig = function () {
           showSpriteSpeed: doc.data().show_sprite_speed,
           chanceSurprise: doc.data().chance_surprise,
           chanceSpecial: doc.data().chance_special,
-          typeList: doc.data().type_list,
-          typeProbabilities: doc.data().type_probabilities,
+          types: doc.data().types,
         };
         this.applyConfig();
       } else {
-        this.config = {
-          spriteSize: 1,
-          specialSprite: true,
-          surpriseSprite: true,
-          baseSpeed: 200,
-          maxSpriteQuantity: 500,
-          isPaused: false,
-          hasFinished: false,
-          density: 1000 / 4000,
-          showName: true,
-          showScore: true,
-          showId: true,
-          showWind: true,
-          windSpeed: 0,
-          gameOpen: true,
-          showSpriteSpeed: false,
-          chanceSurprise: 20,
-          chanceSpecial: 25,
-          typeList: ['regular', 'surprise', 'special'],
-          typeProbabilities: [0.5, 0.3, 0.2],
-        };
-        console.log('Config doesn\'t exist on the server, using default values');
+        console.error('Config doesn\'t exist on the server');
       }
     });
 };
 
-Game.prototype.calculateNewPos = function (element) {
-  element.bottom += element.speed;
-  element.pos += this.config.windSpeed;
+Game.prototype.updateSpritePosition = function (sprite) {
+  sprite.bottom += sprite.speed;
+  sprite.pos += this.config.windSpeed;
 };
 
 Game.prototype.drawSprite = function (sprite) {
@@ -227,7 +193,7 @@ Game.prototype.drawSprite = function (sprite) {
   }
 };
 
-Game.prototype.updateScore = function (score, type) {
+Game.prototype.updateScore = function (score, type, config) {
   scoreLabelElem.innerHTML = score;
   getPlayerRefById(this.hud.id)
     .update({
@@ -235,8 +201,7 @@ Game.prototype.updateScore = function (score, type) {
       timestamp: new Date().getTime(),
     })
     .then(function () {
-      const soundEffect = new Audio(soundMap[type]);
-      soundEffect.src = soundMap[type];
+      const soundEffect = new Audio(config.types[type].audio_path);
       soundEffect.play()
         .catch((error) => {
           console.log('Problem during audio play', error);
@@ -248,8 +213,8 @@ Game.prototype.updateScore = function (score, type) {
     });
 };
 
-Game.prototype.buildSprite = function (color, type, points) {
-  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, color, type, points,
+Game.prototype.buildSprite = function (type, points) {
+  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type, points,
     getRandomSpeed(this.config.baseSpeed));
   sprite.positionX = generateRandomXPos(canvasWidth * 0.95);
 
@@ -257,7 +222,7 @@ Game.prototype.buildSprite = function (color, type, points) {
   const transformedHeight = spriteInitialHeight * this.config.spriteSize;
   const transformedWidth = spriteInitialWidth * this.config.spriteSize;
 
-  el.className = 'sprite ' + sprite.color;
+  el.className = 'sprite ' + sprite.type;
   el.style.left = sprite.positionX + 'px';
   el.style.bottom = sprite.positionY + 'px';
   el.style.backgroundSize = '100% 100%';
@@ -271,7 +236,7 @@ Game.prototype.buildSprite = function (color, type, points) {
   el.onclick = () => {
     if (!gameRef.config.isPaused) {
       gameRef.hud.score += points;
-      gameRef.updateScore(gameRef.hud.score, type);
+      gameRef.updateScore(gameRef.hud.score, type, gameRef.config);
       canvasElement.removeChild(el);
     }
   };
@@ -339,7 +304,16 @@ Game.prototype.applyConfig = function () {
 };
 
 //Source https://codetheory.in/weighted-biased-random-number-generation-with-javascript-based-on-probability/
-Game.prototype.randomType = function (typeList, weight) {
+Game.prototype.randomType = function () {
+
+  const weight = Object.values(this.config.types).map(function (type) {
+    return type.prob;
+  });
+
+  const typeList = Object.values(this.config.types).map(function (type) {
+    return type.type;
+  });
+
   const total_weight = weight.reduce(function (prev, cur, i, arr) {
     return prev + cur;
   });
@@ -347,7 +321,7 @@ Game.prototype.randomType = function (typeList, weight) {
   const random_num = rand(0, total_weight);
   let weight_sum = 0;
 
-  for (let i = 0; i < typeList.length; i++) {
+  for (let i = 0; i < weight.length; i++) {
     weight_sum += weight[i];
     weight_sum = +weight_sum.toFixed(2);
 
@@ -359,21 +333,14 @@ Game.prototype.randomType = function (typeList, weight) {
 
 Game.prototype.generateSprites = function () {
   for (let i = 0; i < parseInt(this.densityStep, 10); i++) {
-    let randomType = this.randomType(this.config.typeList, this.config.typeProbabilities);
-    if (this.config.specialSprite && randomType === 'special') {
-      this.spriteArray.push(this.buildSprite(randomType, randomType, 300));
-    } else if (this.config.surpriseSprite && randomType === 'surprise') {
-      let luckyFactor = getLuckyFactor();
-      this.spriteArray.push(this.buildSprite(randomType, luckyFactor > 0 ? randomType + '_good' : randomType + '_bad', 400 * luckyFactor));
-    } else if (this.config.surpriseSprite && randomType === 'regular') {
-      this.spriteArray.push(this.buildSprite(randomType, randomType, 150));
-    }
+    const randomType = this.randomType();
+    this.spriteArray.push(this.buildSprite(randomType, this.config.types[randomType].points));
   }
 };
 
 Game.prototype.moveSprites = function () {
   this.spriteArray.forEach((sprite) => {
-    this.calculateNewPos(sprite);
+    this.updateSpritePosition(sprite);
     this.drawSprite(sprite);
   });
 };
@@ -458,7 +425,7 @@ Game.prototype.playBackgroundMusic = function () {
   if (this.backMusic) {
     this.backMusic.pause();
   }
-  this.backMusic = new Audio(soundMap['background_music']);
+  this.backMusic = new Audio(backgroundMusicPath);
   this.backMusic.loop = true;
   this.backMusic.volume = 0.3;
   this.backMusic.play()
@@ -534,7 +501,6 @@ function handleStartButtonClick(game) {
 }
 
 function setupInitialEvents(game) {
-
   startPlayElement.onclick = () => {
     handleStartButtonClick(game);
   };

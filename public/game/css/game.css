@@ -162,7 +162,13 @@ body {
     background-repeat: no-repeat;
 }
 
-.sprite.surprise {
+.sprite.surprise_bad {
+    position: absolute;
+    background-image: url('../images/surprise-balloon.png');
+    background-repeat: no-repeat;
+}
+
+.sprite.surprise_good {
     position: absolute;
     background-image: url('../images/surprise-balloon.png');
     background-repeat: no-repeat;
