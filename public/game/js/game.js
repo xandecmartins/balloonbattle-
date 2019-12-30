@@ -338,6 +338,7 @@ Game.prototype.applyConfig = function () {
   });
 };
 
+//Source https://codetheory.in/weighted-biased-random-number-generation-with-javascript-based-on-probability/
 Game.prototype.randomType = function (typeList, weight) {
   const total_weight = weight.reduce(function (prev, cur, i, arr) {
     return prev + cur;
