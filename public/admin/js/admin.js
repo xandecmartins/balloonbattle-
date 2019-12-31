@@ -138,7 +138,7 @@ function applyConfig() {
 
 function handleOnChangeType(element, dbName) {
   element.addEventListener('change', (event) => {
-    updateConfig(dbName, event.target.value);
+    updateConfig(dbName, Number(event.target.value));
   });
 }
 
@@ -161,7 +161,6 @@ function dataTableTypesConfigEdit(typesEditTable, types) {
       const probCell = row.insertCell(2);
       probCell.setAttribute('class', 'column-table');
       probCell.innerHTML = '<input type="text" name="type.prob" value="' + type.prob + '"/>';
-      ;
       handleOnChangeType(probCell, 'types.' + [type.type] + '.prob');
     });
 }
