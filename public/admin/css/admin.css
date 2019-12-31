@@ -1,5 +1,14 @@
 .config-summary-label {
     font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.config-summary-value {
+    margin-bottom: 10px;
+}
+
+.config-img {
+    margin-bottom: inherit;
 }
 
 .config-container {

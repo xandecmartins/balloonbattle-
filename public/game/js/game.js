@@ -30,7 +30,6 @@ function getPlayerRefById(id) {
 const spriteInitialWidth = 40;
 const spriteInitialHeight = 53;
 const updateTime = 50;
-const minimumSpeed = 3;
 const backgroundMusicPath = 'sounds/top-gear-soundtrack-track-1.mp3';
 
 const canvasContainerElement = document.getElementById('canvas-container');
@@ -63,7 +62,7 @@ function createUUID() {
   );
 }
 
-function getRandomSpeed(base_speed) {
+function getRandomSpeed(base_speed, minimumSpeed) {
   return Math.floor(Math.random() * base_speed) / 100 + minimumSpeed;
 }
 
@@ -142,6 +141,7 @@ Game.prototype.loadServerConfig = function () {
           spriteSize: doc.data().balloon_size,
           specialSprite: doc.data().special_balloon,
           surpriseSprite: doc.data().surprise_balloon,
+          regularSprite: doc.data().regular_balloon,
           baseSpeed: doc.data().base_speed,
           maxSpriteQuantity: doc.data().max_balloon_quantity,
           isPaused: doc.data().is_paused,
@@ -155,6 +155,7 @@ Game.prototype.loadServerConfig = function () {
           gameOpen: doc.data().game_open,
           showSpriteSpeed: doc.data().show_sprite_speed,
           types: doc.data().types,
+          minSpeed: doc.data().min_speed,
         };
         this.applyConfig();
       } else {
@@ -179,11 +180,18 @@ Game.prototype.drawSprite = function (sprite) {
   sprite.el.style.bottom = sprite.bottom + 'px';
   sprite.el.style.left = sprite.pos + 'px';
 
+  if (sprite.type === 'regular' && !this.config.regularSprite) {
+    sprite.el.style.display = 'none';
+  } else if (sprite.type === 'regular') {
+    sprite.el.style.display = 'block';
+  }
+
   if (sprite.type === 'special' && !this.config.specialSprite) {
     sprite.el.style.display = 'none';
   } else if (sprite.type === 'special') {
     sprite.el.style.display = 'block';
   }
+
   if (sprite.type.startsWith('surprise') && !this.config.surpriseSprite) {
     sprite.el.style.display = 'none';
   } else if (sprite.type.startsWith('surprise')) {
@@ -213,8 +221,8 @@ Game.prototype.updateScore = function (score, type, config) {
 
 Game.prototype.buildSprite = function (type, points) {
   const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type, points,
-    getRandomSpeed(this.config.baseSpeed));
-  sprite.positionX = generateRandomXPos(canvasWidth * 0.95);
+    getRandomSpeed(this.config.baseSpeed, this.config.minSpeed));
+  sprite.positionX = generateRandomXPos(canvasWidth * 0.90);
 
   const el = document.createElement('div');
   const transformedHeight = spriteInitialHeight * this.config.spriteSize;
@@ -304,7 +312,7 @@ Game.prototype.applyConfig = function () {
     element.el.style.height = transformedHeight + 'px';
     element.height = transformedHeight;
 
-    element.speed = getRandomSpeed(this.config.baseSpeed);
+    element.speed = getRandomSpeed(this.config.baseSpeed, this.config.minSpeed);
     element.points = this.config.types[element.type].points;
   });
 };

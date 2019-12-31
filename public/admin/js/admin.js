@@ -45,11 +45,11 @@ function updateConfig(name, value) {
 }
 
 function getPositiveCheckMark() {
-  return '<img width="24px" height="24px" src="images/iconfinder_Checkmark_1891021.png"/>';
+  return '<img width="24px" height="24px" class="config-img" src="images/iconfinder_Checkmark_1891021.png"/>';
 }
 
 function getNegativeCheckMark() {
-  return '<img width="24px" height="24px" src="images/iconfinder_Close_1891023.png"/>';
+  return '<img width="24px" height="24px" class="config-img" src="images/iconfinder_Close_1891023.png"/>';
 }
 
 function loadServerConfig() {
@@ -58,6 +58,7 @@ function loadServerConfig() {
       if (doc.exists) {
         this.config = {
           spriteSize: doc.data().balloon_size,
+          regularSprite: doc.data().regular_balloon,
           specialSprite: doc.data().special_balloon,
           surpriseSprite: doc.data().surprise_balloon,
           baseSpeed: doc.data().base_speed,
@@ -73,6 +74,7 @@ function loadServerConfig() {
           gameOpen: doc.data().game_open,
           showSpriteSpeed: doc.data().show_sprite_speed,
           types: doc.data().types,
+          minSpeed: doc.data().min_speed,
         };
         this.applyConfig();
       } else {
@@ -122,11 +124,13 @@ function applyConfig() {
 
   applySliderConfig('baseSpeed', 'baseSpeedControl', 'baseSpeedOutputControl', this.config.baseSpeed);
   applySliderConfig('windSpeed', 'windSpeedControl', 'windSpeedOutputControl', this.config.windSpeed);
+  applySliderConfig('minSpeed', 'minSpeedControl', 'minSpeedOutputControl', this.config.minSpeed);
   applyCheckBoxConfig('isPaused', 'isPausedControl', this.config.isPaused);
   applyCheckBoxConfig('hasFinished', 'hasFinishedControl', this.config.hasFinished);
   applyCheckBoxConfig('gameOpen', 'gameOpenControl', this.config.gameOpen);
 
   applySliderConfig('spriteSize', 'spriteSizeControl', 'spriteSizeOutputControl', this.config.spriteSize);
+  applyCheckBoxConfig('regularSprite', 'regularSpriteControl', this.config.regularSprite);
   applyCheckBoxConfig('specialSprite', 'specialSpriteControl', this.config.specialSprite);
   applyCheckBoxConfig('surpriseSprite', 'surpriseSpriteControl', this.config.surpriseSprite);
   applySliderConfig('density', 'densityControl', 'densityOutputControl', this.config.density);
@@ -199,6 +203,7 @@ function setupVisualEvents() {
 function setupGameEvents() {
   handleOnChangeSlider('baseSpeedControl', 'baseSpeedOutputControl', 'base_speed');
   handleOnChangeSlider('windSpeedControl', 'windSpeedOutputControl', 'wind_speed');
+  handleOnChangeSlider('minSpeedControl', 'minSpeedOutputControl', 'min_speed');
   handleOnChangeCheckBox('isPausedControl', 'is_paused');
   handleOnChangeCheckBox('hasFinishedControl', 'has_finished');
   handleOnChangeCheckBox('gameOpenControl', 'game_open');
@@ -206,6 +211,7 @@ function setupGameEvents() {
 
 function setupSpriteEvents() {
   handleOnChangeSlider('spriteSizeControl', 'spriteSizeOutputControl', 'balloon_size');
+  handleOnChangeCheckBox('regularSpriteControl', 'regular_balloon');
   handleOnChangeCheckBox('specialSpriteControl', 'special_balloon');
   handleOnChangeCheckBox('surpriseSpriteControl', 'surprise_balloon');
   handleOnChangeSlider('densityControl', 'densityOutputControl', 'density');
