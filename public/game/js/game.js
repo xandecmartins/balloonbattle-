@@ -154,8 +154,6 @@ Game.prototype.loadServerConfig = function () {
           windSpeed: doc.data().wind_speed,
           gameOpen: doc.data().game_open,
           showSpriteSpeed: doc.data().show_sprite_speed,
-          chanceSurprise: doc.data().chance_surprise,
-          chanceSpecial: doc.data().chance_special,
           types: doc.data().types,
         };
         this.applyConfig();
@@ -267,7 +265,7 @@ Game.prototype.applyConfig = function () {
   if (!this.config.isPaused && this.backMusic && this.backMusic.paused && !this.hasLocalFinished) {
     this.playBackgroundMusic();
   } else if (this.config.isPaused) {
-    this.backMusic.pause();
+    this.pauseBackgroundMusic();
   }
 
   if (this.config.showId) {
@@ -297,9 +295,17 @@ Game.prototype.applyConfig = function () {
   }
 
   this.spriteArray.forEach((element) => {
-    element.el.style.width = spriteInitialWidth * this.config.spriteSize + 'px';
-    element.el.style.height = spriteInitialHeight * this.config.spriteSize + 'px';
+    let transformedHeight = spriteInitialHeight * this.config.spriteSize;
+    let transformedWidth = spriteInitialWidth * this.config.spriteSize;
+
+    element.el.style.width = transformedWidth + 'px';
+    element.width = transformedWidth;
+
+    element.el.style.height = transformedHeight + 'px';
+    element.height = transformedHeight;
+
     element.speed = getRandomSpeed(this.config.baseSpeed);
+    element.points = this.config.types[element.type].points;
   });
 };
 
@@ -355,8 +361,8 @@ Game.prototype.updateGame = function () {
     this.moveSprites();
   }
 
-  if (this.config.isPaused && this.backMusic) {
-    this.backMusic.pause();
+  if (this.config.isPaused) {
+    this.pauseBackgroundMusic();
   }
 
   if (this.spriteArray.length === this.config.maxSpriteQuantity
@@ -388,9 +394,7 @@ Game.prototype.buildWaitMessage = function () {
 };
 
 Game.prototype.showResult = function (text) {
-  if (this.backMusic) {
-    this.backMusic.pause();
-  }
+  this.pauseBackgroundMusic();
 
   canvasElement.style.display = 'none';
   modalResultElem.style.display = 'block';
@@ -400,9 +404,7 @@ Game.prototype.showResult = function (text) {
 };
 
 Game.prototype.endGame = function () {
-  if (this.backMusic) {
-    this.backMusic.pause();
-  }
+  this.pauseBackgroundMusic();
   this.hasLocalFinished = true;
   this.pauseLocalGame();
   this.clearPlayArea();
@@ -422,9 +424,7 @@ Game.prototype.endGame = function () {
 };
 
 Game.prototype.playBackgroundMusic = function () {
-  if (this.backMusic) {
-    this.backMusic.pause();
-  }
+  this.pauseBackgroundMusic();
   this.backMusic = new Audio(backgroundMusicPath);
   this.backMusic.loop = true;
   this.backMusic.volume = 0.3;
@@ -432,6 +432,12 @@ Game.prototype.playBackgroundMusic = function () {
     .catch((error) => {
       console.log('Problem during audio play', error);
     });
+};
+
+Game.prototype.pauseBackgroundMusic = function() {
+  if (this.backMusic) {
+    this.backMusic.pause();
+  }
 };
 
 Game.prototype.initGame = function () {
