@@ -58,9 +58,6 @@ function loadServerConfig() {
       if (doc.exists) {
         this.config = {
           spriteSize: doc.data().balloon_size,
-          regularSprite: doc.data().regular_balloon,
-          specialSprite: doc.data().special_balloon,
-          surpriseSprite: doc.data().surprise_balloon,
           baseSpeed: doc.data().base_speed,
           maxSpriteQuantity: doc.data().max_balloon_quantity,
           isPaused: doc.data().is_paused,
@@ -112,6 +109,10 @@ function applyDataTableTypesConfig(typesSummaryTable, types) {
       const probCell = row.insertCell(2);
       probCell.setAttribute('class', 'column-table');
       probCell.innerHTML = type.prob;
+
+      const enabledCell = row.insertCell(3);
+      enabledCell.setAttribute('class', 'column-table');
+      enabledCell.innerHTML = type.enabled? getPositiveCheckMark() : getNegativeCheckMark();
     });
 }
 
@@ -130,9 +131,6 @@ function applyConfig() {
   applyCheckBoxConfig('gameOpen', 'gameOpenControl', this.config.gameOpen);
 
   applySliderConfig('spriteSize', 'spriteSizeControl', 'spriteSizeOutputControl', this.config.spriteSize);
-  applyCheckBoxConfig('regularSprite', 'regularSpriteControl', this.config.regularSprite);
-  applyCheckBoxConfig('specialSprite', 'specialSpriteControl', this.config.specialSprite);
-  applyCheckBoxConfig('surpriseSprite', 'surpriseSpriteControl', this.config.surpriseSprite);
   applySliderConfig('density', 'densityControl', 'densityOutputControl', this.config.density);
   applySliderConfig('maxSpriteQuantity', 'maxSpriteQuantityControl', 'maxSpriteQuantityOutputControl', this.config.maxSpriteQuantity);
 
@@ -140,9 +138,15 @@ function applyConfig() {
   dataTableTypesConfigEdit(document.getElementById('edit-types-table'), this.config.types);
 }
 
-function handleOnChangeType(element, dbName) {
+function handleOnChangeTypeNumber(element, dbName) {
   element.addEventListener('change', (event) => {
     updateConfig(dbName, Number(event.target.value));
+  });
+}
+
+function handleOnChangeTypeBoolean(element, dbName) {
+  element.addEventListener('change', (event) => {
+    updateConfig(dbName, Boolean(event.target.checked));
   });
 }
 
@@ -160,12 +164,19 @@ function dataTableTypesConfigEdit(typesEditTable, types) {
       const pointsCell = row.insertCell(1);
       pointsCell.setAttribute('class', 'column-table');
       pointsCell.innerHTML = '<input type="text" name="type.points" value="' + type.points + '"/>';
-      handleOnChangeType(pointsCell, 'types.' + [type.type] + '.points');
+      handleOnChangeTypeNumber(pointsCell, 'types.' + [type.type] + '.points');
 
       const probCell = row.insertCell(2);
       probCell.setAttribute('class', 'column-table');
       probCell.innerHTML = '<input type="text" name="type.prob" value="' + type.prob + '"/>';
-      handleOnChangeType(probCell, 'types.' + [type.type] + '.prob');
+      handleOnChangeTypeNumber(probCell, 'types.' + [type.type] + '.prob');
+
+      const enabledCell = row.insertCell(3);
+      enabledCell.setAttribute('class', 'column-table');
+      console.log(type.enabled);
+      let check = type.enabled?'checked':'';
+      enabledCell.innerHTML = '<label class="switch"> <input type="checkbox" '+ check+'><span class="slider round"></span></label>';
+      handleOnChangeTypeBoolean(enabledCell, 'types.' + [type.type] + '.enabled');
     });
 }
 
@@ -211,9 +222,6 @@ function setupGameEvents() {
 
 function setupSpriteEvents() {
   handleOnChangeSlider('spriteSizeControl', 'spriteSizeOutputControl', 'balloon_size');
-  handleOnChangeCheckBox('regularSpriteControl', 'regular_balloon');
-  handleOnChangeCheckBox('specialSpriteControl', 'special_balloon');
-  handleOnChangeCheckBox('surpriseSpriteControl', 'surprise_balloon');
   handleOnChangeSlider('densityControl', 'densityOutputControl', 'density');
   handleOnChangeSlider('maxSpriteQuantityControl', 'maxSpriteQuantityOutputControl', 'max_balloon_quantity');
 }

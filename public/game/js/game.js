@@ -139,9 +139,6 @@ Game.prototype.loadServerConfig = function () {
       if (doc.exists) {
         this.config = {
           spriteSize: doc.data().balloon_size,
-          specialSprite: doc.data().special_balloon,
-          surpriseSprite: doc.data().surprise_balloon,
-          regularSprite: doc.data().regular_balloon,
           baseSpeed: doc.data().base_speed,
           maxSpriteQuantity: doc.data().max_balloon_quantity,
           isPaused: doc.data().is_paused,
@@ -177,26 +174,14 @@ Game.prototype.drawSprite = function (sprite) {
     sprite.el.innerHTML = '';
   }
 
+  if(!this.config.types[sprite.type].enabled){
+    sprite.el.style.display = 'none';
+  } else {
+    sprite.el.style.display = 'block';
+  }
+
   sprite.el.style.bottom = sprite.bottom + 'px';
   sprite.el.style.left = sprite.pos + 'px';
-
-  if (sprite.type === 'regular' && !this.config.regularSprite) {
-    sprite.el.style.display = 'none';
-  } else if (sprite.type === 'regular') {
-    sprite.el.style.display = 'block';
-  }
-
-  if (sprite.type === 'special' && !this.config.specialSprite) {
-    sprite.el.style.display = 'none';
-  } else if (sprite.type === 'special') {
-    sprite.el.style.display = 'block';
-  }
-
-  if (sprite.type.startsWith('surprise') && !this.config.surpriseSprite) {
-    sprite.el.style.display = 'none';
-  } else if (sprite.type.startsWith('surprise')) {
-    sprite.el.style.display = 'block';
-  }
 };
 
 Game.prototype.updateScore = function (score, type, config) {

@@ -29,12 +29,8 @@
             <div class="middle"></div>
             <div id="gameContainer" class="summary-config">
                 <h3>Game</h3>
-                <span id="baseSpeedLabel" class="config-summary-label">Base Speed </span><span
-                    id="baseSpeed" class="config-summary-value"></span><br>
                 <span id="windSpeedLabel" class="config-summary-label">Wind Speed </span><span
                     id="windSpeed" class="config-summary-value"></span><br>
-                <span id="minSpeedLabel" class="config-summary-label">Min Speed </span><span
-                    id="minSpeed" class="config-summary-value"></span><br>
                 <span id="isPausedLabel" class="config-summary-label">Game Paused </span><span id="isPaused"
                                                                                                class="config-summary-value"></span><br>
                 <span id="hasFinishedLabel" class="config-summary-label">Game Finished </span><span
@@ -47,16 +43,14 @@
                 <h3>Sprites</h3>
                 <span id="spriteSizeLabel" class="config-summary-label">Size </span><span id="spriteSize"
                                                                                           class="config-summary-value"></span><br>
-                <span id="regularSpriteLabel" class="config-summary-label">Regular Sprite </span><span
-                    id="regularSprite" class="config-summary-value"></span><br>
-                <span id="specialSpriteLabel" class="config-summary-label">Special Sprite </span><span
-                    id="specialSprite" class="config-summary-value"></span><br>
-                <span id="surpriseSpriteLabel" class="config-summary-label">Surprise Enable </span><span
-                    id="surpriseSprite" class="config-summary-value"></span><br>
                 <span id="maxSpriteQuantityLabel" class="config-summary-label">Max Quantity </span><span
                     id="maxSpriteQuantity" class="config-summary-value"></span><br>
                 <span id="densityLabel" class="config-summary-label">Density </span><span id="density"
                                                                                           class="config-summary-value"></span><br>
+                <span id="baseSpeedLabel" class="config-summary-label">Base Speed </span><span
+                    id="baseSpeed" class="config-summary-value"></span><br>
+                <span id="minSpeedLabel" class="config-summary-label">Min Speed </span><span
+                    id="minSpeed" class="config-summary-value"></span>
             </div>
             <div class="middle"></div>
             <div id="typeContainer" class="summary-config">
@@ -68,6 +62,7 @@
                         <th>Type</th>
                         <th>Points</th>
                         <th>Probability</th>
+                        <th>Enabled</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -145,30 +140,6 @@
             <h2>Game</h2>
 
             <div class="control-container">
-                <label for="baseSpeedControl" class="control-label">Base Speed</label>
-            </div>
-            <div class="control-container">
-                <input id="baseSpeedControl" type="range" min="0" max="1000" step="100" list="tickMarksBaseSpeed"/>
-                <datalist id="tickMarksBaseSpeed">
-                    <option value="0"></option>
-                    <option value="100"></option>
-                    <option value="200"></option>
-                    <option value="300"></option>
-                    <option value="400"></option>
-                    <option value="500"></option>
-                    <option value="600"></option>
-                    <option value="700"></option>
-                    <option value="800"></option>
-                    <option value="900"></option>
-                    <option value="1000"></option>
-                </datalist>
-            </div>
-            <div class="control-container">
-                <span id="baseSpeedOutputControl" class="output-control-label"></span>
-            </div>
-
-            <br>
-            <div class="control-container">
                 <label for="windSpeedControl" class="control-label">Wind Speed</label>
             </div>
             <div class="control-container">
@@ -187,28 +158,6 @@
             </div>
             <div class="control-container">
                 <span id="windSpeedOutputControl" class="output-control-label"></span>
-            </div>
-
-            <br>
-            <div class="control-container">
-                <label for="minSpeedControl" class="control-label">Min Speed</label>
-            </div>
-            <div class="control-container">
-                <input id="minSpeedControl" type="range" min="0" max="20" step="1" list="tickMarksMinSpeed"/>
-                <datalist id="tickMarksMinSpeed">
-                    <option value="0"></option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    <option value="3"></option>
-                    <option value="4"></option>
-                    <option value="5"></option>
-                    <option value="10"></option>
-                    <option value="15"></option>
-                    <option value="20"></option>
-                </datalist>
-            </div>
-            <div class="control-container">
-                <span id="minSpeedOutputControl" class="output-control-label"></span>
             </div>
 
             <br>
@@ -275,39 +224,6 @@
 
             <br>
             <div class="control-container">
-                <label for="regularSpriteControl" class="control-label">Regular Sprite</label>
-            </div>
-            <div class="control-container">
-                <label class="switch">
-                    <input id="regularSpriteControl" type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-            <br>
-            <div class="control-container">
-                <label for="specialSpriteControl" class="control-label">Special Sprite</label>
-            </div>
-            <div class="control-container">
-                <label class="switch">
-                    <input id="specialSpriteControl" type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-            <br>
-            <div class="control-container">
-                <label for="surpriseSpriteControl" class="control-label">Surprise Sprite</label>
-            </div>
-            <div class="control-container">
-                <label class="switch">
-                    <input id="surpriseSpriteControl" type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-            <br>
-            <div class="control-container">
                 <label for="densityControl" class="control-label">Density</label>
             </div>
             <div class="control-container">
@@ -354,6 +270,51 @@
                 <span id="maxSpriteQuantityOutputControl" class="output-control-label"></span>
             </div>
 
+            <br>
+            <div class="control-container">
+                <label for="baseSpeedControl" class="control-label">Base Speed</label>
+            </div>
+            <div class="control-container">
+                <input id="baseSpeedControl" type="range" min="0" max="1000" step="100" list="tickMarksBaseSpeed"/>
+                <datalist id="tickMarksBaseSpeed">
+                    <option value="0"></option>
+                    <option value="100"></option>
+                    <option value="200"></option>
+                    <option value="300"></option>
+                    <option value="400"></option>
+                    <option value="500"></option>
+                    <option value="600"></option>
+                    <option value="700"></option>
+                    <option value="800"></option>
+                    <option value="900"></option>
+                    <option value="1000"></option>
+                </datalist>
+            </div>
+            <div class="control-container">
+                <span id="baseSpeedOutputControl" class="output-control-label"></span>
+            </div>
+
+            <br>
+            <div class="control-container">
+                <label for="minSpeedControl" class="control-label">Min Speed</label>
+            </div>
+            <div class="control-container">
+                <input id="minSpeedControl" type="range" min="0" max="20" step="1" list="tickMarksMinSpeed"/>
+                <datalist id="tickMarksMinSpeed">
+                    <option value="0"></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="10"></option>
+                    <option value="15"></option>
+                    <option value="20"></option>
+                </datalist>
+            </div>
+            <div class="control-container">
+                <span id="minSpeedOutputControl" class="output-control-label"></span>
+            </div>
         </div>
 
         <div id="SpriteTypes" class="w3-container config" style="display:none">
@@ -366,6 +327,7 @@
                         <th>Type</th>
                         <th>Points</th>
                         <th>Probability</th>
+                        <th>Enabled</th>
                     </tr>
                     </thead>
                     <tbody>
