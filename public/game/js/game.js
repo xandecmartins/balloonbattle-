@@ -174,7 +174,7 @@ Game.prototype.drawSprite = function (sprite) {
     sprite.el.innerHTML = '';
   }
 
-  if(!this.config.types[sprite.type].enabled){
+  if (!this.config.types[sprite.type].enabled) {
     sprite.el.style.display = 'none';
   } else {
     sprite.el.style.display = 'block';
@@ -204,16 +204,16 @@ Game.prototype.updateScore = function (score, type, config) {
     });
 };
 
-Game.prototype.buildSprite = function (type, points) {
-  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type, points,
-    getRandomSpeed(this.config.baseSpeed, this.config.minSpeed));
-  sprite.positionX = generateRandomXPos(canvasWidth * 0.90);
-
-  const el = document.createElement('div');
+Game.prototype.buildSprite = function (type) {
   const transformedHeight = spriteInitialHeight * this.config.spriteSize;
   const transformedWidth = spriteInitialWidth * this.config.spriteSize;
+  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type.type, type.points,
+    getRandomSpeed(this.config.baseSpeed, this.config.minSpeed));
+  sprite.positionX = generateRandomXPos(canvasWidth-transformedWidth);
 
-  el.className = 'sprite ' + sprite.type;
+  const el = document.createElement('div');
+  el.className = 'sprite';
+  el.style.backgroundImage = 'url('+type.icon+')';
   el.style.left = sprite.positionX + 'px';
   el.style.bottom = sprite.positionY + 'px';
   el.style.backgroundSize = '100% 100%';
@@ -226,8 +226,8 @@ Game.prototype.buildSprite = function (type, points) {
   const gameRef = this;
   el.onclick = () => {
     if (!gameRef.config.isPaused) {
-      gameRef.hud.score += points;
-      gameRef.updateScore(gameRef.hud.score, type, gameRef.config);
+      gameRef.hud.score += type.points;
+      gameRef.updateScore(gameRef.hud.score, type.type, gameRef.config);
       canvasElement.removeChild(el);
     }
   };
@@ -237,7 +237,7 @@ Game.prototype.buildSprite = function (type, points) {
     el: el,
     speed: sprite.speed,
     points: sprite.points,
-    type: type,
+    type: sprite.type,
     bottom: sprite.positionY,
     pos: sprite.positionX,
     width: transformedWidth,
@@ -299,19 +299,23 @@ Game.prototype.applyConfig = function () {
 
     element.speed = getRandomSpeed(this.config.baseSpeed, this.config.minSpeed);
     element.points = this.config.types[element.type].points;
+
+    element.el.backgroundImage = 'url('+this.config.types[element.type].icon+')';
   });
 };
 
 //Source https://codetheory.in/weighted-biased-random-number-generation-with-javascript-based-on-probability/
 Game.prototype.randomType = function () {
 
-  const weight = Object.values(this.config.types).map(function (type) {
-    return type.prob;
-  });
+  const weight = Object.values(this.config.types)
+    .map(function (type) {
+      return type.prob;
+    });
 
-  const typeList = Object.values(this.config.types).map(function (type) {
-    return type.type;
-  });
+  const typeList = Object.values(this.config.types)
+    .map(function (type) {
+      return type.type;
+    });
 
   const total_weight = weight.reduce(function (prev, cur, i, arr) {
     return prev + cur;
@@ -332,8 +336,7 @@ Game.prototype.randomType = function () {
 
 Game.prototype.generateSprites = function () {
   for (let i = 0; i < parseInt(this.densityStep, 10); i++) {
-    const randomType = this.randomType();
-    this.spriteArray.push(this.buildSprite(randomType, this.config.types[randomType].points));
+    this.spriteArray.push(this.buildSprite(this.config.types[this.randomType()]));
   }
 };
 
@@ -427,7 +430,7 @@ Game.prototype.playBackgroundMusic = function () {
     });
 };
 
-Game.prototype.pauseBackgroundMusic = function() {
+Game.prototype.pauseBackgroundMusic = function () {
   if (this.backMusic) {
     this.backMusic.pause();
   }
@@ -446,7 +449,7 @@ Game.prototype.initGame = function () {
     canvasHeight = parseInt(canvasElement.style.height.replace('px', ''), 10);
   }
   if (!canvasWidth) {
-    canvasWidth = parseInt(canvasElement.style.height.replace('px', ''), 10);
+    canvasWidth = parseInt(canvasElement.style.width.replace('px', ''), 10);
   }
 };
 

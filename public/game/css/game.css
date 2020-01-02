@@ -156,26 +156,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-.sprite.regular {
+.sprite {
     position: absolute;
-    background-image: url('../images/green-balloon.png');
-    background-repeat: no-repeat;
-}
-
-.sprite.special {
-    position: absolute;;
-    background-image: url('../images/special-balloon.png');
-    background-repeat: no-repeat;
-}
-
-.sprite.surprise_bad {
-    position: absolute;
-    background-image: url('../images/surprise-balloon.png');
-    background-repeat: no-repeat;
-}
-
-.sprite.surprise_good {
-    position: absolute;
-    background-image: url('../images/surprise-balloon.png');
     background-repeat: no-repeat;
 }

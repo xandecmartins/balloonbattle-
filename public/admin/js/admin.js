@@ -20,6 +20,13 @@ function getConfigServerRef() {
 
 let config = {};
 
+function playAudio(url) {
+  new Audio(url).play()
+    .catch(() => {
+      console.log('Problems during Audio play');
+    });
+}
+
 function clearTable(tableElement) {
   for (let i = 2; i < tableElement.rows.length;) {
     tableElement.deleteRow(i);
@@ -112,7 +119,15 @@ function applyDataTableTypesConfig(typesSummaryTable, types) {
 
       const enabledCell = row.insertCell(3);
       enabledCell.setAttribute('class', 'column-table');
-      enabledCell.innerHTML = type.enabled? getPositiveCheckMark() : getNegativeCheckMark();
+      enabledCell.innerHTML = type.enabled ? getPositiveCheckMark() : getNegativeCheckMark();
+
+      const iconCell = row.insertCell(4);
+      iconCell.setAttribute('class', 'column-table');
+      iconCell.innerHTML = '<img src="' + type.icon + '" width="40px" height="53px" />';
+
+      const soundCell = row.insertCell(5);
+      soundCell.setAttribute('class', 'column-table');
+      soundCell.innerHTML = '<img src="images/play.png" width="40px" height="40px" onclick="playAudio(\''+type.audio_path+'\')"/>';
     });
 }
 
@@ -150,6 +165,14 @@ function handleOnChangeTypeBoolean(element, dbName) {
   });
 }
 
+function handleOnChangeTypeText(element, dbName) {
+  element.addEventListener('change', (event) => {
+    console.log(dbName);
+    console.log(event.target.value);
+    updateConfig(dbName, event.target.value);
+  });
+}
+
 function dataTableTypesConfigEdit(typesEditTable, types) {
   clearTable(typesEditTable);
 
@@ -173,10 +196,19 @@ function dataTableTypesConfigEdit(typesEditTable, types) {
 
       const enabledCell = row.insertCell(3);
       enabledCell.setAttribute('class', 'column-table');
-      console.log(type.enabled);
-      let check = type.enabled?'checked':'';
-      enabledCell.innerHTML = '<label class="switch"> <input type="checkbox" '+ check+'><span class="slider round"></span></label>';
+      let check = type.enabled ? 'checked' : '';
+      enabledCell.innerHTML = '<label class="switch"> <input type="checkbox" ' + check + '><span class="slider round"></span></label>';
       handleOnChangeTypeBoolean(enabledCell, 'types.' + [type.type] + '.enabled');
+
+      const iconCell = row.insertCell(4);
+      iconCell.setAttribute('class', 'column-table');
+      iconCell.innerHTML = '<input type="text" name="type.icon" value="' + type.icon + '"/>';
+      handleOnChangeTypeText(iconCell, 'types.' + [type.type] + '.icon')
+
+      const soundCell = row.insertCell(5);
+      soundCell.setAttribute('class', 'column-table');
+      soundCell.innerHTML = '<input type="text" name="type.audio_path" value="' + type.audio_path + '"/>';
+      handleOnChangeTypeText(soundCell, 'types.' + [type.type] + '.audio_path')
     });
 }
 
