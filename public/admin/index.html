@@ -13,64 +13,91 @@
     <div id="summary" class="config-container">
         <fieldset>
             <legend>Summary of Configurations</legend>
-            <div id="visualContainer" class="summary-config">
-                <h3>Visual</h3>
-                <span id="showNameLabel" class="config-summary-label">Show Name </span> <span id="showName"
-                                                                                              class="config-summary-value"></span><br>
-                <span id="showScoreLabel" class="config-summary-label">Show Score </span><span
-                    id="showScore" class="config-summary-value"></span><br>
-                <span id="showIdLabel" class="config-summary-label">Show Id </span><span id="showId"
-                                                                                         class="config-summary-value"></span><br>
-                <span id="showWindLabel" class="config-summary-label">Show Wind Speed </span><span id="showWind"
-                                                                                                   class="config-summary-value"></span><br>
-                <span id="showSpriteSpeedLabel" class="config-summary-label">Show Sprite Speed </span><span
-                    id="showSpriteSpeed" class="config-summary-value"></span><br>
-            </div>
-            <div class="middle"></div>
-            <div id="gameContainer" class="summary-config">
-                <h3>Game</h3>
-                <span id="windSpeedLabel" class="config-summary-label">Wind Speed </span><span
-                    id="windSpeed" class="config-summary-value"></span><br>
-                <span id="isPausedLabel" class="config-summary-label">Game Paused </span><span id="isPaused"
-                                                                                               class="config-summary-value"></span><br>
-                <span id="hasFinishedLabel" class="config-summary-label">Game Finished </span><span
-                    id="hasFinished" class="config-summary-value"></span><br>
-                <span id="gameOpenLabel" class="config-summary-label">Game Open </span><span id="gameOpen"
-                                                                                             class="config-summary-value"></span><br>
-            </div>
-            <div class="middle"></div>
-            <div id="spriteContainer" class="summary-config">
-                <h3>Sprites</h3>
-                <span id="spriteSizeLabel" class="config-summary-label">Size </span><span id="spriteSize"
-                                                                                          class="config-summary-value"></span><br>
-                <span id="maxSpriteQuantityLabel" class="config-summary-label">Max Quantity </span><span
-                    id="maxSpriteQuantity" class="config-summary-value"></span><br>
-                <span id="densityLabel" class="config-summary-label">Density </span><span id="density"
-                                                                                          class="config-summary-value"></span><br>
-                <span id="baseSpeedLabel" class="config-summary-label">Base Speed </span><span
-                    id="baseSpeed" class="config-summary-value"></span><br>
-                <span id="minSpeedLabel" class="config-summary-label">Min Speed </span><span
-                    id="minSpeed" class="config-summary-value"></span>
-            </div>
-            <div class="middle"></div>
-            <div id="typeContainer" class="summary-config">
-                <h3>Sprite Types</h3>
+            <section id="visualContainer" class="summary-config">
+                <h2>Visual</h2>
+                <div class="summary-config-line">
+                    <span id="showNameLabel" class="summary-config-label">Show Name</span>
+                    <span id="showName" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="showScoreLabel" class="summary-config-label">Show Score</span>
+                    <span id="showScore" class="summary-config-value"></span>
 
-                <table id="summary-types-table" class="minimalistBlack">
-                    <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Points</th>
-                        <th>Probability</th>
-                        <th>Enabled</th>
-                        <th>Icon</th>
-                        <th>Sound</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr></tr>
-                    </tbody>
-                </table>
+                </div>
+                <div class="summary-config-line">
+                    <span id="showIdLabel" class="summary-config-label">Show Id</span>
+                    <span id="showId" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="showWindLabel" class="summary-config-label">Show Wind Speed</span>
+                    <span id="showWind" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="showSpriteSpeedLabel" class="summary-config-label">Show Sprite Speed</span>
+                    <span id="showSpriteSpeed" class="summary-config-value"></span>
+                </div>
+            </section>
+            <section id="gameContainer" class="summary-config">
+                <h2>Game</h2>
+                <div class="summary-config-line">
+                    <span id="windSpeedLabel" class="summary-config-label">Wind Speed</span>
+                    <span id="windSpeed" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="isPausedLabel" class="summary-config-label">Game Paused</span>
+                    <span id="isPaused" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="hasFinishedLabel" class="summary-config-label">Game Finished </span>
+                    <span id="hasFinished" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="gameOpenLabel" class="summary-config-label">Game Open </span>
+                    <span id="gameOpen" class="summary-config-value"></span>
+                </div>
+            </section>
+            <section id="spriteContainer" class="summary-config">
+                <h2>Sprites</h2>
+                <div class="summary-config-line">
+                    <span id="spriteSizeLabel" class="summary-config-label">Size </span>
+                    <span id="spriteSize" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="maxSpriteQuantityLabel" class="summary-config-label">Max Quantity </span>
+                    <span id="maxSpriteQuantity" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="densityLabel" class="summary-config-label">Density </span>
+                    <span id="density" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="baseSpeedLabel" class="summary-config-label">Base Speed </span>
+                    <span id="baseSpeed" class="summary-config-value"></span>
+                </div>
+                <div class="summary-config-line">
+                    <span id="minSpeedLabel" class="summary-config-label">Min Speed </span>
+                    <span id="minSpeed" class="summary-config-value"></span>
+                </div>
+            </section>
+            <div id="typeContainer" class="summary-config">
+                <h2>Sprite Types</h2>
+                <div class="summary-config-line">
+                    <table id="summary-types-table" class="minimalistBlack">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Points</th>
+                            <th>Probability</th>
+                            <th>Enabled</th>
+                            <th>Icon</th>
+                            <th>Sound</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </fieldset>
     </div>
@@ -83,68 +110,51 @@
             <button class="w3-bar-item w3-button" onclick="openTab('SpriteTypes')">Sprite Types</button>
         </div>
 
-        <div id="Visual" class="w3-container config">
+        <section id="Visual" class="w3-container config">
             <h2>Visual</h2>
 
             <div class="control-container">
                 <label for="showNameControl" class="control-label">Show Name</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="showNameControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <br>
             <div class="control-container">
                 <label for="showScoreControl" class="control-label">Show Score</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="showScoreControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <br>
             <div class="control-container">
                 <label for="showIdControl" class="control-label">Show Id</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="showIdControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <br>
             <div class="control-container">
                 <label for="showWindControl" class="control-label">Show Wind</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="showWindControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-
-            <br>
             <div class="control-container">
                 <label for="showSpriteSpeedControl" class="control-label">Show Sprite Speed</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="showSpriteSpeedControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-        </div>
+        </section>
 
-        <div id="Game" class="w3-container config" style="display:none">
+        <section id="Game" class="w3-container config" style="display:none">
             <h2>Game</h2>
 
             <div class="control-container">
                 <label for="windSpeedControl" class="control-label">Wind Speed</label>
-            </div>
-            <div class="control-container">
                 <input id="windSpeedControl" type="range" min="-20" max="20" step="1" list="tickMarksWindSpeed"/>
                 <datalist id="tickMarksWindSpeed">
                     <option value="-20"></option>
@@ -157,53 +167,38 @@
                     <option value="15"></option>
                     <option value="20"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="windSpeedOutputControl" class="output-control-label"></span>
             </div>
-
-            <br>
             <div class="control-container">
                 <label for="isPausedControl" class="control-label">Is Paused</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="isPausedControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
-
-            <br>
             <div class="control-container">
                 <label for="hasFinishedControl" class="control-label">Has Finished</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="hasFinishedControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
 
-            <br>
             <div class="control-container">
                 <label for="gameOpenControl" class="control-label">Game Open</label>
-            </div>
-            <div class="control-container">
                 <label class="switch">
                     <input id="gameOpenControl" type="checkbox">
                     <span class="slider round"></span>
                 </label>
             </div>
 
-        </div>
+        </section>
 
-        <div id="Sprites" class="w3-container config" style="display:none">
+        <section id="Sprites" class="w3-container config" style="display:none">
             <h2>Sprites</h2>
 
             <div class="control-container">
                 <label for="spriteSizeControl" class="control-label">Sprite Size</label>
-            </div>
-            <div class="control-container">
                 <input id="spriteSizeControl" type="range" min="0.1" max="10" step="0.1" list="tickMarksSpriteSize"/>
                 <datalist id="tickMarksSpriteSize">
                     <option value="0.1"></option>
@@ -219,16 +214,11 @@
                     <option value="9"></option>
                     <option value="10"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="spriteSizeOutputControl" class="output-control-label"></span>
             </div>
 
-            <br>
             <div class="control-container">
                 <label for="densityControl" class="control-label">Density</label>
-            </div>
-            <div class="control-container">
                 <input id="densityControl" type="range" min="0" max="1" step="0.1" list="tickMarksDensity"/>
                 <datalist id="tickMarksDensity">
                     <option value="0"></option>
@@ -243,17 +233,13 @@
                     <option value="0.9"></option>
                     <option value="1"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="densityOutputControl" class="output-control-label"></span>
             </div>
 
-            <br>
             <div class="control-container">
                 <label for="maxSpriteQuantityControl" class="control-label">Max Sprite Quantity</label>
-            </div>
-            <div class="control-container">
-                <input id="maxSpriteQuantityControl" type="range" min="0" max="1000" step="10" list="tickMarksMaxQuantity"/>
+                <input id="maxSpriteQuantityControl" type="range" min="0" max="1000" step="10"
+                       list="tickMarksMaxQuantity"/>
                 <datalist id="tickMarksMaxQuantity">
                     <option value="0"></option>
                     <option value="100"></option>
@@ -267,16 +253,11 @@
                     <option value="900"></option>
                     <option value="1000"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="maxSpriteQuantityOutputControl" class="output-control-label"></span>
             </div>
 
-            <br>
             <div class="control-container">
                 <label for="baseSpeedControl" class="control-label">Base Speed</label>
-            </div>
-            <div class="control-container">
                 <input id="baseSpeedControl" type="range" min="0" max="5000" step="100" list="tickMarksBaseSpeed"/>
                 <datalist id="tickMarksBaseSpeed">
                     <option value="0"></option>
@@ -295,16 +276,11 @@
                     <option value="4000"></option>
                     <option value="5000"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="baseSpeedOutputControl" class="output-control-label"></span>
             </div>
 
-            <br>
             <div class="control-container">
                 <label for="minSpeedControl" class="control-label">Min Speed</label>
-            </div>
-            <div class="control-container">
                 <input id="minSpeedControl" type="range" min="0" max="20" step="1" list="tickMarksMinSpeed"/>
                 <datalist id="tickMarksMinSpeed">
                     <option value="0"></option>
@@ -317,13 +293,11 @@
                     <option value="15"></option>
                     <option value="20"></option>
                 </datalist>
-            </div>
-            <div class="control-container">
                 <span id="minSpeedOutputControl" class="output-control-label"></span>
             </div>
-        </div>
+        </section>
 
-        <div id="SpriteTypes" class="w3-container config" style="display:none">
+        <section id="SpriteTypes" class="w3-container config" style="display:none">
             <h2>Sprite Types</h2>
 
             <div class="control-container">
@@ -344,7 +318,7 @@
                 </table>
             </div>
 
-        </div>
+        </section>
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>

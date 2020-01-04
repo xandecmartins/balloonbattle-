@@ -347,6 +347,14 @@ Game.prototype.moveSprites = function () {
   });
 };
 
+Game.prototype.checkLastBalloon = function () {
+  if (this.spriteArray.length === this.config.maxSpriteQuantity
+    && Math.min.apply(Math, this.spriteArray.map(el => el.bottom)) >= canvasHeight + spriteInitialHeight * this.config.spriteSize) {
+    this.pauseLocalGame();
+    this.showResult(this.buildWaitMessage());
+  }
+};
+
 Game.prototype.updateGame = function () {
   if (!this.config.isPaused && !this.config.hasFinished) {
     this.densityStep += this.config.density;
@@ -355,17 +363,11 @@ Game.prototype.updateGame = function () {
       this.densityStep = 0;
     }
     this.moveSprites();
-  }
-
-  if (this.config.isPaused) {
+  } else {
     this.pauseBackgroundMusic();
   }
 
-  if (this.spriteArray.length === this.config.maxSpriteQuantity
-    && Math.min.apply(Math, this.spriteArray.map(el => el.bottom)) >= canvasHeight + spriteInitialHeight * this.config.spriteSize) {
-    this.pauseLocalGame();
-    this.showResult(this.buildWaitMessage());
-  }
+  this.checkLastBalloon();
 };
 
 Game.prototype.buildGameOverMessage = function (firstPlayerDoc) {

@@ -1,10 +1,27 @@
-.config-summary-label {
+.summary-config-label {
     font-weight: bold;
+    display: inline-block;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.summary-config-value {
+    display: inline-block;
+    margin-right: 10px;
+    text-align: right;
+    width: 40px;
+}
+
+.summary-config-line {
+    text-align: right;
+    display: block;
     margin-bottom: 10px;
 }
 
-.config-summary-value {
-    margin-bottom: 10px;
+.summary-config {
+    display: table-cell;
+    width: 10%;
+    text-align: center;
 }
 
 .config-img {
@@ -16,14 +33,6 @@
     height: 20%;
     display: table;
     font-size: 14px;
-}
-.summary-config {
-    display: table-cell;
-}
-
-.middle {
-    display: table-cell;
-    width: 10%;
 }
 
 .switch {
@@ -95,11 +104,15 @@ input:checked + .slider:before {
 }
 
 .control-container {
-    display: table-cell;
+    display: flex;
     vertical-align: middle;
+    margin-bottom: 10px;
 }
 
 .control-label {
+    font-weight: bold;
+    display: inline-block;
+    text-align: right;
     margin-right: 10px;
 }
 
