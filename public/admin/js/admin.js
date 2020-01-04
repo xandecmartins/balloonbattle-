@@ -77,6 +77,7 @@ function loadServerConfig() {
           windSpeed: doc.data().wind_speed,
           gameOpen: doc.data().game_open,
           showSpriteSpeed: doc.data().show_sprite_speed,
+          showSpritePoints: doc.data().show_points,
           types: doc.data().types,
           minSpeed: doc.data().min_speed,
         };
@@ -137,6 +138,7 @@ function applyConfig() {
   applyCheckBoxConfig('showScore', 'showScoreControl', this.config.showScore);
   applyCheckBoxConfig('showWind', 'showWindControl', this.config.showWind);
   applyCheckBoxConfig('showSpriteSpeed', 'showSpriteSpeedControl', this.config.showSpriteSpeed);
+  applyCheckBoxConfig('showSpritePoints', 'showSpritePointsControl', this.config.showSpritePoints);
 
   applySliderConfig('baseSpeed', 'baseSpeedControl', 'baseSpeedOutputControl', this.config.baseSpeed);
   applySliderConfig('windSpeed', 'windSpeedControl', 'windSpeedOutputControl', this.config.windSpeed);
@@ -167,8 +169,6 @@ function handleOnChangeTypeBoolean(element, dbName) {
 
 function handleOnChangeTypeText(element, dbName) {
   element.addEventListener('change', (event) => {
-    console.log(dbName);
-    console.log(event.target.value);
     updateConfig(dbName, event.target.value);
   });
 }
@@ -241,6 +241,7 @@ function setupVisualEvents() {
   handleOnChangeCheckBox('showIdControl', 'show_id');
   handleOnChangeCheckBox('showWindControl', 'show_wind');
   handleOnChangeCheckBox('showSpriteSpeedControl', 'show_sprite_speed');
+  handleOnChangeCheckBox('showSpritePointsControl', 'show_points');
 }
 
 function setupGameEvents() {

@@ -82,11 +82,10 @@ function HUD() {
   this.score = 0;
 }
 
-function Sprite(x, y, type, points, speed) {
+function Sprite(x, y, type, speed) {
   this.id = createUUID();
   this.positionX = x;
   this.positionY = y;
-  this.points = points;
   this.speed = speed;
   this.type = type;
 }
@@ -148,6 +147,7 @@ Game.prototype.loadServerConfig = function () {
           showScore: doc.data().show_score,
           showId: doc.data().show_id,
           showWind: doc.data().show_wind,
+          showPoints: doc.data().show_points,
           windSpeed: doc.data().wind_speed,
           gameOpen: doc.data().game_open,
           showSpriteSpeed: doc.data().show_sprite_speed,
@@ -167,12 +167,17 @@ Game.prototype.updateSpritePosition = function (sprite) {
 };
 
 Game.prototype.drawSprite = function (sprite) {
+  let spriteContent='';
 
   if (this.config.showSpriteSpeed) {
-    sprite.el.innerHTML = Math.floor(sprite.speed * 100) / 100 + '';
-  } else {
-    sprite.el.innerHTML = '';
+    spriteContent += Math.floor(sprite.speed * 100) / 100 + '';
   }
+
+  if (this.config.showPoints) {
+    spriteContent += ' '+Math.floor(this.config.types[sprite.type].points);
+  }
+
+  sprite.el.innerText = spriteContent;
 
   if (!this.config.types[sprite.type].enabled) {
     sprite.el.style.display = 'none';
@@ -190,6 +195,7 @@ Game.prototype.updateScore = function (score, type, config) {
     .update({
       score: score,
       timestamp: new Date().getTime(),
+      last_pop: type,
     })
     .then(function () {
       const soundEffect = new Audio(config.types[type].audio_path);
@@ -207,7 +213,7 @@ Game.prototype.updateScore = function (score, type, config) {
 Game.prototype.buildSprite = function (type) {
   const transformedHeight = spriteInitialHeight * this.config.spriteSize;
   const transformedWidth = spriteInitialWidth * this.config.spriteSize;
-  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type.type, type.points,
+  const sprite = new Sprite(0, -spriteInitialHeight * this.config.spriteSize, type.type,
     getRandomSpeed(this.config.baseSpeed, this.config.minSpeed));
   sprite.positionX = generateRandomXPos(canvasWidth-transformedWidth);
 
@@ -226,7 +232,7 @@ Game.prototype.buildSprite = function (type) {
   const gameRef = this;
   el.onclick = () => {
     if (!gameRef.config.isPaused) {
-      gameRef.hud.score += type.points;
+      gameRef.hud.score += gameRef.config.types[type.type].points;
       gameRef.updateScore(gameRef.hud.score, type.type, gameRef.config);
       canvasElement.removeChild(el);
     }
@@ -236,7 +242,6 @@ Game.prototype.buildSprite = function (type) {
   return {
     el: el,
     speed: sprite.speed,
-    points: sprite.points,
     type: sprite.type,
     bottom: sprite.positionY,
     pos: sprite.positionX,
@@ -255,9 +260,9 @@ Game.prototype.applyConfig = function () {
     this.restartGame();
   }
 
-  if (!this.config.isPaused && this.backMusic && this.backMusic.paused && !this.hasLocalFinished) {
+  if (!this.config.isPaused && !this.config.hasFinished && this.backMusic && !this.hasLocalFinished) {
     this.playBackgroundMusic();
-  } else if (this.config.isPaused) {
+  } else if (this.config.isPaused && !this.backMusic.paused) {
     this.pauseBackgroundMusic();
   }
 
@@ -298,8 +303,6 @@ Game.prototype.applyConfig = function () {
     element.height = transformedHeight;
 
     element.speed = getRandomSpeed(this.config.baseSpeed, this.config.minSpeed);
-    element.points = this.config.types[element.type].points;
-
     element.el.backgroundImage = 'url('+this.config.types[element.type].icon+')';
   });
 };
@@ -351,6 +354,7 @@ Game.prototype.checkLastBalloon = function () {
   if (this.spriteArray.length === this.config.maxSpriteQuantity
     && Math.min.apply(Math, this.spriteArray.map(el => el.bottom)) >= canvasHeight + spriteInitialHeight * this.config.spriteSize) {
     this.pauseLocalGame();
+    this.hasLocalFinished = true;
     this.showResult(this.buildWaitMessage());
   }
 };
